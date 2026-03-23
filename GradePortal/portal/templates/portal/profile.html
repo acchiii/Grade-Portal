@@ -1,0 +1,53 @@
+{% extends "portal/base.html" %}
+{% block title %}Profile — {{ profile.first_name }} {{ profile.last_name }} — CEC Grade Portal{% endblock %}
+
+{% block content %}
+<div class="page-wrap page-wrap-mid" style="padding-top:2.5rem;">
+
+  <div class="breadcrumb">
+    <a href="{% url 'index' %}">Home</a>
+    <span class="sep">›</span>
+    <span>{% if is_own or request.session.admin_id %}My Profile{% else %}Student Profile #{{ profile.pk }}{% endif %}</span>
+  </div>  
+
+  <div class="card fade-up">
+    <div class="card-header">
+      <div style="display:flex;align-items:center;gap:1.2rem;">
+        <div style="width:56px;height:56px;background:var(--navy);border-radius:50%;
+                    display:flex;align-items:center;justify-content:center;
+                    font-family:var(--serif);font-size:1.3rem;font-weight:700;
+                    color:var(--sky-light);flex-shrink:0;">
+          {{ profile.first_name|first|upper }}{{ profile.last_name|first|upper }}
+        </div>
+        <div>
+          <h3 style="font-size:1.2rem;">{{ profile.last_name }}, {{ profile.first_name }}</h3>
+          <div style="font-size:.82rem;color:var(--text-mid);margin-top:.15rem;">
+            {{ profile.student_no }} &nbsp;&middot;&nbsp;
+            {{ profile.course }} &nbsp;&middot;&nbsp;
+            {{ profile.year_suffix }} Year
+          </div>
+        </div>
+      </div>
+    </div>
+
+   <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:0;">
+  {% for label, val in fields %}
+  <div style="padding:.85rem 1rem;border-bottom:1px solid var(--border-light); {% cycle '' 'border-left:1px solid var(--border-light);' %}">
+    <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;
+                text-transform:uppercase;color:var(--text-light);margin-bottom:.2rem;">
+      {{ label }}
+    </div>
+    <div style="font-size:.92rem;">{{ val }}</div>
+  </div>
+  {% endfor %}
+</div>
+  </div>
+
+  {% if is_own %}
+    <div style="margin-top:1.5rem;">
+      <a href="{% url 'grades' %}" class="btn btn-primary">View My Grades</a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

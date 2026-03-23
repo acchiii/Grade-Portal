@@ -1,0 +1,159 @@
+{% extends "portal/base.html" %}
+{% block title %}My Grades — CEC Grade Portal{% endblock %}
+
+{% block content %}
+<div class="page-wrap" style="padding-top:2.5rem;">
+
+  <div class="breadcrumb">
+    <a href="{% url 'index' %}">Home</a>
+    <span class="sep">›</span>
+    <span>My Grades</span>
+  </div>
+
+
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;
+              flex-wrap:wrap;gap:1.5rem;margin-bottom:2rem;" class="fade-up">
+    <div class="section-header" style="margin-bottom:0;">
+      <div class="eyebrow">Official Grade Report &mdash; 1st Semester A.Y. 2026&ndash;2027</div>
+      <h2>{{ student.last_name }}, {{ student.first_name }}</h2>
+      <p>
+        {{ student.student_no }} &nbsp;&middot;&nbsp;
+        {{ student.course }} &nbsp;&middot;&nbsp;
+        {{ student.year_suffix }} Year
+      </p>
+    </div>
+    <a href="{% url 'profile' student.pk %}" class="btn btn-outline btn-sm">View Profile</a>
+  </div>
+
+ 
+  <div class="stats-grid fade-up-2" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+    <div class="stat-card">
+      <div class="stat-label">General Weighted Avg</div>
+      <div class="stat-value" style="">{{ gwa_fmt }}</div> 
+      <!-- color:{{ stand_color }}; -->
+      <div class="stat-sub">{{ standing }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Subjects Enrolled</div>
+      <div class="stat-value">{{ row_count }}</div>
+      <div class="stat-sub">This semester</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Units Credited</div>
+      <div class="stat-value">{{ total_units }}</div>
+      <div class="stat-sub">Passed subjects only</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Student Status</div>
+      <div class="stat-value" style="font-size:1.1rem;color:var(--green);">Regular</div>
+      <div class="stat-sub">A.Y. {% with first=grade_rows|first %}
+  {% if first %}
+    {{ first.grade.school_yr }}
+  {% endif %}
+{% endwith %}</div>
+    </div>
+  </div>
+
+  <div class="card mt-lg fade-up-3">
+    <div class="card-header">
+      <h3>Grade Sheet &mdash; 1st {% with first=grade_rows|first %}
+  {% if first %}
+    {{ first.grade.semster }} Semester
+    ({{ first.grade.school_yr }})
+  {% endif %}
+{% endwith %}
+</h3>
+      <span style="font-size:.78rem;color:var(--text-light);">
+        {{ row_count }} subject{{ row_count|pluralize }}
+      </span>
+    </div>
+
+    {% if not grade_rows %}
+      <div class="alert alert-info">
+        <span class="alert-icon">&#9432;</span>
+        <div>No grades on record yet. Grades will appear here once encoded by your instructor.</div>
+      </div>
+    {% else %}
+      <div class="grade-table-wrap">
+        <table class="grade-table">
+          <thead>
+            <tr>
+              <th style="display: none;">Subject Code</th>
+              <th>Descriptive Title</th>
+              <th style="text-align:center;">Units</th>
+              <th style="text-align:center;">PRELIM</th>
+              <th style="text-align:center;">MIDTERM</th>
+              <th style="text-align:center;">SEMI</th>
+              <th style="text-align:center;">FINAL</th>
+              <th style="text-align:center;">Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in grade_rows %}
+            <tr>
+              <td style="display: none;">
+                <span class="grade-val" style="color:var(--sky-dim);">{{ row.grade.subject.code }}</span>
+              </td>
+              <td class="subject-name">{{ row.grade.subject.title }}</td>
+              <td class="grade-val" style="text-align:center;">{{ row.grade.subject.units }}</td>
+              <td class="grade-val" style="text-align:center;">
+                {% if row.grade.prelim is not None %}{{ row.grade.prelim|floatformat:1 }}{% else %}&mdash;{% endif %}
+              </td>
+              <td class="grade-val" style="text-align:center;">
+                {% if row.grade.midterm is not None %}{{ row.grade.midterm|floatformat:1 }}{% else %}&mdash;{% endif %}
+              </td>
+              <td class="grade-val" style="text-align:center;">
+                {% if row.grade.semi is not None %}{{ row.grade.semi|floatformat:1 }}{% else %}&mdash;{% endif %}
+              </td>
+              <td style="text-align:center;">
+                {% if row.grade.final is not None %}
+                  <span class="grade-val {{ row.gcls }}" style="font-size:1rem;font-weight:700;">
+                    {{ row.grade.final|floatformat:2 }}
+                  </span>
+                {% else %}
+                  <span style="color:var(--text-light);">&mdash;</span>
+                {% endif %}
+              </td>
+              <td style="text-align:center;">
+                {% if row.rem == 'PENDING' %}
+                  <span class="grade-pill" style="background:var(--sky-pale);color:var(--text-light);">PENDING</span>
+                {% else %}
+                  <span class="grade-pill {{ row.pill }}">{{ row.rem }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    
+      <div style="margin-top:1.4rem;padding-top:1.4rem;border-top:1px solid var(--border-light);
+                  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div style="font-size:.82rem;color:var(--text-light);">
+          Grading Scale: 1.0 (Highest) &ndash; 3.0 (Passing) &ndash; 5.0 (Failed)
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:.7rem;color:var(--text-light);text-transform:uppercase;
+                      letter-spacing:.1em;margin-bottom:.2rem;">General Weighted Average</div>
+          <div style="font-family:var(--serif);font-size:2.4rem;font-weight:700;
+                      line-height:1;">{{ gwa_fmt }}</div>
+                      <!-- color:{{ stand_color }}; -->
+          {% if gwa %}
+            <div style="font-size:.78rem;font-weight:600;margin-top:.2rem;"> 
+              <!-- color:{{ stand_color }}; -->
+              {{ standing }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <p class="text-muted mt-md" style="font-size:.8rem;text-align:center;">
+    For grade inquiries, please visit the Registrar&rsquo;s Office or use our
+    <a href="{% url 'contact' %}">feedback form</a>.
+  </p>
+
+</div>
+{% endblock %}

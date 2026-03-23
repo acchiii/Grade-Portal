@@ -1,0 +1,203 @@
+{% extends "portal/base.html" %}
+{% block title %}Admin Panel — CEC Grade Portal{% endblock %}
+
+  <script>
+        window.location.href = "{% url 'teacher_login' %}";
+    </script>
+
+{% block content %}
+<div class="page-wrap" style="padding-top:2rem;">
+
+  
+  <div style="background:var(--navy);border-radius:var(--radius-lg);
+              padding:1.8rem 2rem;margin-bottom:2rem;
+              border:2px solid rgba(198,40,40,.4);
+              display:flex;align-items:center;justify-content:space-between;
+              flex-wrap:wrap;gap:1rem;" class="fade-up">
+    <div>
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.18em;
+                  text-transform:uppercase;color:#ff8a80;margin-bottom:.35rem;">
+        Registrar Administration
+      </div>
+      <h2 style="font-family:var(--serif);color:var(--white);font-size:1.6rem;margin-bottom:.2rem;">Admin Panel</h2>
+      <p style="color:rgba(255,255,255,.5);font-size:.83rem;">
+        Cebu Eastern College &mdash; Leon Kilat St., Cebu City, Philippines 6000
+      </p>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:.3rem;">
+        A.Y. 2026&ndash;2027 &middot; 1st Semester
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="stats-grid admin-stats-grid fade-up-2" style="margin-bottom:2rem;">
+    <div class="stat-card">
+      <div class="stat-label">Total Students</div>
+      <div class="stat-value">{{ students|length }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Grade Records</div>
+      <div class="stat-value">{{ grade_rows|length }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Feedback Messages</div>
+      <div class="stat-value">{{ feedback|length }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Grading Scale</div>
+      <div class="stat-value" style="font-size:1.1rem;color:var(--sky);">1 &ndash; 5</div>
+      <div class="stat-sub">1.0 High &middot; 5.0 Failed</div>
+    </div>
+  </div>
+
+  <div class="grid grid-3 fade-up-3" style="margin-bottom:2rem;">
+    <div class="card">
+      <h3>Teacher Management</h3>
+      <p>Add new teachers to the system.</p>
+      <a href="{% url 'admin_add_teacher' %}" class="btn btn-primary">Add Teacher</a>
+      <a href="{% url 'admin_teachers' %}" class="btn btn-outline" style="margin-top:0.5rem;">View Teachers</a>
+    </div>
+    <div class="card">
+      <h3>Subject Management</h3>
+      <p>Add new subjects and view all subjects.</p>
+      <a href="{% url 'admin_add_subject' %}" class="btn btn-primary">Add Subject</a>
+      <a href="{% url 'admin_subjects' %}" class="btn btn-outline" style="margin-top:0.5rem;">View Subjects</a>
+    </div>
+    <div class="card">
+      <h3>System Overview</h3>
+      <p>View system statistics and reports.</p>
+      <a href="#" class="btn btn-primary">View Reports</a>
+    </div>
+  </div>
+
+  <!-- Students table -->
+  <div class="card fade-up-4" style="margin-bottom:2rem;">
+    <div class="card-header">
+      <h3>All Students</h3>
+      <span style="font-size:.8rem;color:var(--text-light);">{{ students|length }} records</span>
+    </div>
+    <div class="grade-table-wrap">
+      <table class="grade-table">
+        <thead>
+          <tr>
+            <th class="hidden">ID</th>
+            <th >Student No.</th>
+            <th>Name</th>
+            <th >Email</th>
+            <th>Course</th>
+            <th>Year</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td class="hidden" style="color:var(--text-light);font-family:var(--mono);">{{ s.pk }}</td>
+            <td style="font-family:var(--mono);font-size:.85rem;">{{ s.student_no }}</td>
+            <td class="subject-name">{{ s.last_name }}, {{ s.first_name }}</td>
+            <td  style="font-size:.82rem;">{{ s.email | default:"_"}}</td>
+            <td style="font-size:.82rem;">{{ s.course }}</td>
+            <td style="text-align:center;">{{ s.year_level }}</td>
+            <td>
+              <a href="{% url 'profile' s.pk %}"
+                 class="btn btn-outline btn-sm" style="font-size:.72rem;padding:.3rem .7rem;">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Grades table -->
+  {% comment %} <div class="card fade-up" style="margin-bottom:2rem;">
+    <div class="card-header">
+      <h3>All Grade Records &mdash; 1st Semester 2026&ndash;2027</h3>
+      <span style="font-size:.8rem;color:var(--text-light);">{{ grade_rows|length }} records</span>
+    </div>
+    <div class="grade-table-wrap">
+      <table class="grade-table">
+        <thead>
+          <tr>
+            <th>Student</th><th>Student No.</th><th>Subject</th>
+            <th style="text-align:center;">Units</th>
+            <th style="text-align:center;">Midterm</th>
+            <th style="text-align:center;">Finals</th>
+            <th style="text-align:center;">Final Grade</th>
+            <th style="text-align:center;">Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in grade_rows %}
+          <tr>
+            <td class="subject-name">{{ row.grade.student.last_name }}, {{ row.grade.student.first_name }}</td>
+            <td style="font-family:var(--mono);font-size:.82rem;">{{ row.grade.student.student_no }}</td>
+            <td>
+              <span style="color:var(--sky-dim);font-family:var(--mono);font-size:.8rem;">{{ row.grade.subject.code }}</span>
+              <span style="color:var(--text-mid);font-size:.8rem;margin-left:.3rem;">{{ row.grade.subject.title }}</span>
+            </td>
+            <td style="text-align:center;font-family:var(--mono);">{{ row.grade.subject.units }}</td>
+            <td style="text-align:center;font-family:var(--mono);">
+              {% if row.grade.midterm_raw is not None %}{{ row.grade.midterm_raw|floatformat:0 }}{% else %}&mdash;{% endif %}
+            </td>
+            <td style="text-align:center;font-family:var(--mono);">
+              {% if row.grade.finals_raw is not None %}{{ row.grade.finals_raw|floatformat:0 }}{% else %}&mdash;{% endif %}
+            </td>
+            <td style="text-align:center;">
+              {% if row.grade.final_grade is not None %}
+                <span class="grade-val {{ row.gcls }}" style="font-weight:700;font-size:.95rem;">
+                  {{ row.grade.final_grade|floatformat:2 }}
+                </span>
+              {% else %}&mdash;{% endif %}
+            </td>
+            <td style="text-align:center;">
+              {% if row.grade.remarks %}
+                <span class="grade-pill {{ row.pill }}">{{ row.grade.remarks }}</span>
+              {% else %}&mdash;{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div> {% endcomment %}
+
+  <!-- Feedback table -->
+  <div class="card fade-up" style="margin-bottom:2rem;">
+    <div class="card-header">
+      <h3>Feedback Messages</h3>
+      <span style="font-size:.8rem;color:var(--text-light);">{{ feedback|length }} messages</span>
+    </div>
+    {% if not feedback %}
+      <div class="alert alert-info">
+        <span class="alert-icon">&#9432;</span>
+        <div>No feedback messages yet. Messages submitted via the
+             <a href="{% url 'contact' %}">contact form</a> will appear here.</div>
+      </div>
+    {% else %}
+      <div class="grade-table-wrap">
+        <table class="grade-table">
+          <thead>
+            <tr><th class="hidden md:flex">ID</th><th>Name</th><th class="hidden md:flex">Email</th><th>Subject</th><th>Message</th><th>Submitted</th></tr>
+          </thead>
+          <tbody>
+            {% for f in feedback %}
+            <tr>
+              <td class="hidden md:flex" style="font-family:var(--mono);color:var(--text-light);">{{ f.pk }}</td>
+              <td class="subject-name">{{ f.name }}</td>
+              <td class="hidden md:flex" style="font-size:.82rem;">{{ f.email|default:"&mdash;" }}</td>
+              <td style="font-size:.82rem;">{{ f.subject|default:"&mdash;" }}</td>
+              <td style="max-width:280px;font-size:.85rem;">{{ f.message }}</td>
+              <td style="font-size:.78rem;white-space:nowrap;">{{ f.submitted|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

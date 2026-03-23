@@ -1,0 +1,316 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CEC Grade Portal{% endblock %}</title>
+  
+  <link rel="stylesheet" href="{% static 'portal/css/style.css' %}">
+  {% tailwind_css %}
+  <style>
+    #frm{
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: none;
+      z-index: 50;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0,0,0,.4);
+      border: none;
+      border-radius: 0;
+      overflow: auto;
+    }
+    #frm.active{
+      display: flex;
+    }
+    body.modal-open {
+      overflow: hidden;
+    }
+    form.adminform {
+      background: #fff;
+      padding: 0 1rem;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+      
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .navbar-nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .formcont {
+      padding: 1rem 0.5rem;
+    }
+
+    #id_email, #id_password {
+      z-index: 20;
+      transform: scaleY(20px);
+    }
+    .mobile-menu a a{
+      background: white;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>Cebu Eastern College &mdash; Leon Kilat St., Cebu City, Philippines 6000</span>
+  <span>
+    {% if request.user.is_authenticated %}
+      Logged in as: <strong style="color:rgba(255,255,255,.85);">
+        {{ request.user.first_name }} {{ request.user.last_name }}
+      </strong>
+    {% else %}
+      Academic Year 2026&ndash;2027 &middot; 1st Semester
+    {% endif %}
+  </span>
+</div>
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <a href="{% url 'index' %}" class="navbar-brand">
+      <div class="brand-emblem"><img src="{% static 'portal/images/banner.png' %}" class="rounded-full"></div>
+      <div class="brand-text">
+        <div class="brand-name">Cebu Eastern College</div>
+        <div class="brand-sub">Student Grade Portal</div>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <ul class="navbar-nav">
+      <li><a href="{% url 'index' %}" {% if current == 'index' %}class="active"{% endif %}>Home</a></li>
+
+      {% if request.user.is_authenticated %}
+        <li><a href="{% url 'grades' %}" {% if current == 'grades' %}class="active"{% endif %}>My Grades</a></li>
+        <li><a href="{% url 'profile' request.user.pk %}" {% if current == 'profile' %}class="active"{% endif %}>Profile</a></li>
+      {% else %}
+        <li><a href="{% url 'login' %}" {% if current == 'login' %}class="active"{% endif %}>Login</a></li>
+        <li><a href="{% url 'register' %}" {% if current == 'register' %}class="active"{% endif %}>Register</a></li>
+      {% endif %}
+
+      <li><a href="{% url 'contact' %}" {% if current == 'contact' %}class="active"{% endif %}>Contact</a></li>    
+        <li><a href="{% url 'teacher_login' %}" class="teacher-link"> Teacher</a></li>    
+          <li><a href="{% url 'admin_login' %}" id="adminbtn" class="admin-link" style="border-radius: 100%; padding: .4rem .4rem;">🔒</a></li>
+
+      {% if request.user.is_authenticated or request.session.admin_id %}
+        <li>
+          <div class="nav-user">
+            <div class="nav-avatar">{{ request.user.first_name|first|upper }}</div>
+            <a href="{% url 'logout' %}"
+               style="font-size:.75rem; padding:.4rem .4rem;background:rgba(255,255,255,.1);
+                      color:rgba(255,255,255,1) !important;border-radius: 100%;border:1px solid rgba(255,255,255,.15);">
+             &nbsp; &nbsp;x&nbsp;&nbsp;
+            </a>
+          </div>
+        </li>
+      {% else %}
+        <li><a href="{% url 'login' %}" class="btn-nav">Sign In</a></li>
+      {% endif %}
+    </ul>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobile-menu-btn">
+      <span class="mobile-menu-line"></span>
+      <span class="mobile-menu-line"></span>
+      <span class="mobile-menu-line"></span>
+    </button>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+      <ul>
+        <li><a href="{% url 'index' %}" {% if current == 'index' %}class="active"{% endif %}>Home</a></li>
+
+        {% if request.user.is_authenticated %}
+          <li><a href="{% url 'grades' %}" {% if current == 'grades' %}class="active"{% endif %}>My Grades</a></li>
+          <li><a href="{% url 'profile' request.user.pk %}" {% if current == 'profile' %}class="active"{% endif %}>Profile</a></li>
+        {% else %}
+          <li><a href="{% url 'login' %}" {% if current == 'login' %}class="active"{% endif %}>Login</a></li>
+          <li><a href="{% url 'register' %}" {% if current == 'register' %}class="active"{% endif %}>Register</a></li>
+        {% endif %}
+
+        <li><a href="{% url 'contact' %}" {% if current == 'contact' %}class="active"{% endif %}>Contact</a></li>    
+          <li><a href="{% url 'teacher_login' %}" class="teacher-link"> Teacher</a></li>    
+            <li><a href="{% url 'admin_login' %}" id="mobile-adminbtn" class="admin-link">Admin</a></li>
+
+        {% if request.user.is_authenticated or request.session.admin_id %}
+          <li>
+            <div class="nav-user">
+              {% comment %} <div class="nav-avatar">{{ request.user.first_name|first|upper }}</div> {% endcomment %}
+              <a href="{% url 'logout' %}"
+                 style="font-size:.75rem;padding:.4rem .9rem;background:rgba(255,255,255,0);
+                        color:rgba(255,255,255,.7) !important;border-radius:6px;border:0px solid rgba(255,255,255,.15);">
+                Logout
+              </a>
+            </div>
+          </li>
+        {% else %}
+          <li><a href="{% url 'login' %}" class="btn-nav">Sign In</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+     
+  </div>
+</header>
+
+
+
+
+  
+  <div class="card" id="frm">
+    
+    <form action="{% url 'admin_login' %}" method="POST" class="adminform fade-up-4">
+      {% csrf_token %}
+      <div class="formcont">
+        <h2 style="margin-bottom: 2rem; margin-top: 5%; text-align: center; font-size: 1.7rem; font-weight: 600;">Admin Login</h2>
+        {% if error_message %}
+          <div class="alert alert-error" style="margin-bottom: 1rem;">
+            <span class="alert-icon">&#10007;</span>
+            <div>{{ error_message }}</div>
+          </div>
+        {% endif %}
+        <div class="form-group">
+          <label for="admin_id">ID NUMBER</label>
+          <input type="number" name="admin_id" id="admin_id" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="id_password">Password</label>
+          <input type="password" name="password" id="id_password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Login</button>
+        <button type="button" id="closeBtn" class="btn btn-outline btn-full" style="margin-top: 0.5rem;">Cancel</button>
+      </div>
+    </form>
+   
+  </div>
+
+
+  
+  {% if error_message and error_message != '' %}
+      <div class="alert alert-error" id="errorAlert" style="position: fixed; top: 20%; right: 20%; z-index: 50;">
+        <span class="alert-icon">&#10007;</span>
+        <div>{{ error_message }}</div>
+      </div>
+
+      
+    
+    {% endif %}
+
+
+  <script>
+   
+         setTimeout(function() {
+        const alert = document.getElementById('errorAlert');
+        if (alert) {
+            alert.remove(); 
+        }
+
+       
+    }, 2000); 
+
+    
+const frm = document.getElementById('frm');
+    
+    document.getElementById('adminbtn').addEventListener('click', function(event) {
+        event.preventDefault();
+        
+        frm.classList.toggle('active');
+        document.body.classList.toggle('modal-open');
+          if (frm.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = 'auto';
+    }
+    }); 
+
+
+     document.getElementById('mobile-adminbtn').addEventListener('click', function(event) {
+        event.preventDefault();
+        
+        frm.classList.toggle('active');
+        document.body.classList.toggle('modal-open');
+          if (frm.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = 'auto';
+    }
+    }); 
+    
+    document.getElementById('frm').addEventListener('click', function(event) {
+        if (event.target === this) {
+            this.classList.remove('active');
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = 'auto'
+        } 
+    });
+    
+    document.getElementById('closeBtn').addEventListener('click', function(event) {
+            frm.classList.remove('active');
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = 'auto'
+         
+    });
+
+    // Mobile menu functionality
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+            console.log('Hamburger clicked!');
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            console.log('Menu active:', mobileMenu.classList.contains('active'));
+        });
+        
+        // Close menu when clicking on links
+        mobileMenu.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            }
+        });
+    } else {
+        console.log('Mobile menu elements not found:', mobileMenuBtn, mobileMenu);
+    }
+
+    
+  </script>
+
+
+{% block content %}{% endblock %}
+
+<footer class="site-footer">
+  <div>
+    <div class="footer-brand">Cebu Eastern College</div>
+    <div style="margin-top:.25rem;">Leon Kilat St., Cebu City, Philippines 6000</div>
+    <div style="margin-top:.1rem;">info@cec.edu.ph</div>
+  </div>
+  <div style="text-align:center;">
+    <div>&copy; {% now "Y" %} Cebu Eastern College. All rights reserved.</div>
+    <div style="margin-top:.2rem;">Student Grade Portal &mdash; A.Y. 2026&ndash;2027</div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+{% extends 'portal/base.html' %}
+{% block title %}
+  CEC Grade Portal — Add Grade
+{% endblock %}
+
+{% block content %}
+  <div class="page-wrap page-wrap-narrow w-full" style="padding-top:2.5rem;">
+    <div class="breadcrumb">
+      <a href="{% url 'index' %}">Home</a>
+      <span class="sep">›</span>
+      <a href="{% url 'teacher' %}">Teacher Dashboard</a>
+      <span class="sep">›</span>
+      <span>Section View</span>
+    </div>
+
+    <div class="section-header fade-up">
+      <div class="eyebrow">{{ section.section_name }}</div>
+      <h2>Section Info</h2>
+      <p>Your students in this section.</p>
+    </div>
+
+    <div class="card fade-up-2 w-full">
+     <table>
+  <thead>
+    <tr>
+      <th class="text-left">Name</th>
+      <th class="text-left">Prelim</th>
+      <th class="text-left">Midterm</th>
+      <th class="text-left">Semi</th>
+      <th class="text-left">Final</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in grades %}
+<tr>
+  <td>{{ item.student.last_name }}, {{ item.student.first_name }}</td>
+  <td>{{ item.prelim }}</td>
+  <td>{{ item.midterm }}</td>
+  <td>{{ item.semi }}</td>
+  <td>{{ item.final }}</td>
+</tr>
+{% endfor %}
+  </tbody>
+</table>
+    </div>
+  </div>
+{% endblock %}

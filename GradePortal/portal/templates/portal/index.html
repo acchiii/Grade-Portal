@@ -1,0 +1,155 @@
+{% extends "portal/base.html" %}
+{% load static %}
+{% block title %}CEC Grade Portal — Home{% endblock %}
+
+{% block content %}
+
+
+<div class="home-hero">
+  <img src="{% static 'portal/images/cec-banner.jpg' %}"
+       alt="Cebu Eastern College Campus — Leon Kilat St., Cebu City">
+  <div class="hero-overlay"></div>
+  <div class="hero-text">
+    <div class="location">
+      Leon Kilat St., Cebu City, Philippines 6000
+    </div>
+    <div class="title">Student Grade Portal</div>
+  </div>
+</div>
+
+
+<div style="background:#fff;color:var(--text);padding:3rem 2.5rem;position:relative;overflow:hidden;">
+  <div style="position:absolute;right:3rem;bottom:-2rem;font-family:var(--serif);
+              font-size:13rem;font-weight:900;color:rgba(255,255,255,.03);
+              line-height:1;pointer-events:none;user-select:none;">CEC</div>
+  <div style="max-width:1200px;margin:0 auto;position:relative;z-index:1;
+              display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;">
+    <div class="fade-up">
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+                  color:var(--sky-light);margin-bottom:.6rem;display:flex;align-items:center;gap:.6rem;">
+        <span style="display:inline-block;width:22px;height:2px;background:var(--off-white);border-radius:2px;"></span>
+        Academic Year 2026&ndash;2026
+      </div>
+      <h1 style="font-family:var(--serif);font-size:2.6rem;font-weight:900;
+                 color:var(--text);line-height:1.1;margin-bottom:.7rem;">
+        Official Student<br>
+        <em style="font-style:normal;color:var(--sky-light);">Grade Portal</em>
+      </h1>
+      <p style="color:var(--text);font-size:.95rem;max-width:480px;line-height:1.7;">
+        Access your official grades and academic records online.
+        Powered by the Cebu Eastern College Registrar&rsquo;s Office.
+      </p>
+      <div style="display:flex;gap:1rem;margin-top:1.8rem;flex-wrap:wrap;" class="fade-up-2">
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'grades' %}" class="btn btn-gold">View My Grades</a>
+          <a href="{% url 'profile' request.user.pk %}" class="btn btn-outline-white">My Profile</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-gold">Student Login</a>
+          <a href="{% url 'register' %}" class="btn btn-outline-white">Register Account</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="fade-up-3" style="display:flex;flex-direction:column;gap:.7rem;">
+      {% for pill in hero_pills %}
+      <div style="background:rgba(0,0,0,.01);border:1px solid rgba(0,0,0,.12);
+                  border-radius:10px;padding:.7rem 1.2rem;display:flex;align-items:center;
+                  gap:.8rem;min-width:240px;backdrop-filter:blur(8px);">
+        <span style="font-size:1.2rem;color:var(--text);">{{ pill.icon }}</span>
+        <div>
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;
+                      text-transform:uppercase;color:var(--text);">{{ pill.label }}</div>
+          <div style="font-size:.88rem;color:rgba(0,0,0,.85);font-weight:600;">{{ pill.value }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="stats-grid mt-lg fade-up">
+    <div class="stat-card">
+      <div class="stat-label">Semester</div>
+      <div class="stat-value" style="font-size:1.35rem;">1st Sem</div>
+      <div class="stat-sub">2026&ndash;2026</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Grade Viewing</div>
+      <div class="stat-value" style="font-size:1.35rem;color:var(--green);">Open</div>
+      <div class="stat-sub">Until April 31, 2026</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Courses Offered</div>
+      <div class="stat-value">6</div>
+      <div class="stat-sub">Undergraduate programs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">2nd Sem Enrollment</div>
+      <div class="stat-value" style="font-size:1.1rem;color:var(--sky);">Jan 2026</div>
+      <div class="stat-sub">Opens January 6</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem;margin-top:.5rem;">
+    <div class="card fade-up" style="border-top:3px solid var(--navy);">
+      <div style="font-size:2rem;margin-bottom:.8rem;">📋</div>
+      <h3 style="font-family:var(--serif);color:var(--navy);margin-bottom:.5rem;">View Grades</h3>
+      <p style="color:var(--text-mid);font-size:.88rem;line-height:1.65;">
+        Check your midterm and final grades for all enrolled subjects.
+        Official grades released by the Registrar&rsquo;s Office.
+      </p>
+      <a href="{% if request.user.is_authenticated %}{% url 'grades' %}{% else %}{% url 'login' %}{% endif %}"
+         style="display:inline-flex;align-items:center;gap:.3rem;margin-top:1rem;
+                font-size:.82rem;font-weight:600;color:var(--sky-dim);">
+        {% if request.user.is_authenticated %}See my grades{% else %}Login to view{% endif %} &rarr;
+      </a>
+    </div>
+    <div class="card fade-up-2" style="border-top:3px solid var(--sky);">
+      <div style="font-size:2rem;margin-bottom:.8rem;">🎓</div>
+      <h3 style="font-family:var(--serif);color:var(--navy);margin-bottom:.5rem;">Academic Records</h3>
+      <p style="color:var(--text-mid);font-size:.88rem;line-height:1.65;">
+        Track your academic standing, GWA, and completed units across all semesters of your program.
+      </p>
+      <a href="{% url 'register' %}"
+         style="display:inline-flex;align-items:center;gap:.3rem;margin-top:1rem;
+                font-size:.82rem;font-weight:600;color:var(--sky-dim);">Create account &rarr;</a>
+    </div>
+    <div class="card fade-up-3" style="border-top:3px solid var(--navy-mid);">
+      <div style="font-size:2rem;margin-bottom:.8rem;">✉️</div>
+      <h3 style="font-family:var(--serif);color:var(--navy);margin-bottom:.5rem;">Contact Registrar</h3>
+      <p style="color:var(--text-mid);font-size:.88rem;line-height:1.65;">
+        Submit grade inquiries, transcript requests, and enrollment concerns to the Registrar&rsquo;s Office.
+      </p>
+      <a href="{% url 'contact' %}"
+         style="display:inline-flex;align-items:center;gap:.3rem;margin-top:1rem;
+                font-size:.82rem;font-weight:600;color:var(--sky-dim);">Send a message &rarr;</a>
+    </div>
+  </div>
+
+
+  <!-- Grading Scale -->
+  <!-- <div class="card mt-lg fade-up-4">
+    <div class="card-header">
+      <h3>Grading Scale Reference</h3>
+      <span style="font-size:.78rem;color:var(--text-light);">CEC Official Grading System</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;">
+      {% for entry in grading_scale %}
+      <div style="display:flex;align-items:center;gap:.9rem;padding:.6rem .8rem;border-radius:8px;
+                  background:var(--sky-tint);border:1px solid var(--border-light);">
+        <span style="font-family:var(--mono);font-size:1rem;font-weight:700;
+                      min-width:36px;">{{ entry.grade }}</span> color:{{ entry.color }};
+        <div>
+          <div style="font-size:.82rem;font-weight:600;color:var(--text);">{{ entry.range }}</div>
+          {% if entry.description %}
+            <div style="font-size:.7rem;color:var(--text-light);">{{ entry.description }}</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div> -->
+
+</div>
+{% endblock %}

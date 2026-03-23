@@ -1,0 +1,80 @@
+{% extends "portal/base.html" %}
+{% block title %}CEC Grade Portal — Teachers{% endblock %}
+
+{% block content %}
+<div class="page-wrap" style="padding-top:2.5rem;">
+
+  <div class="breadcrumb">
+    <a href="{% url 'index' %}">Home</a>
+    <span class="sep">›</span>
+    <a href="{% url 'admin_panel' %}">Admin Panel</a>
+    <span class="sep">›</span>
+    <span>Teachers</span>
+  </div>
+
+  <div class="section-header fade-up">
+    <div class="eyebrow">Admin Panel</div>
+    <h2>All Teachers</h2>
+    <p>List of all teachers in the system.</p>
+  </div>
+
+  <!-- Filter Form -->
+  <div class="card fade-up-2" style="margin-bottom: 2rem;">
+    <form method="GET" style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="course">Filter by Course:</label>
+        <select name="course" id="course" class="form-control" style="width: auto; min-width: 200px;">
+          <option value="">All Courses</option>
+          {% for course_code, course_name in course_choices %}
+            <option value="{{ course_code }}" {% if course_filter == course_code %}selected{% endif %}>
+              {{ course_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Filter</button>
+      {% if course_filter %}
+        <a href="{% url 'admin_teachers' %}" class="btn btn-outline">Clear Filter</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="card fade-up-3">
+    <div class="card-header">
+      <h3>Teachers</h3>
+      <span style="font-size:.8rem;color:var(--text-light);">{{ teachers|length }} records</span>
+    </div>
+    <div class="grade-table-wrap">
+      <table class="grade-table">
+        <thead>
+          <tr>
+            <th class="hidden md:flex">ID</th>
+            <th>Name</th>
+            <th class="hidden md:flex">Email</th>
+            <th>Department</th>
+            <th>Subjects</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for teacher in teachers %}
+          <tr>
+            <td class="hidden md:flex" style="color:var(--text-light);font-family:var(--mono);">{{ teacher.teacher_id }}</td>
+            <td class="subject-name">{{ teacher.name }}</td>
+            <td class="hidden md:flex" style="font-size:.82rem;">{{ teacher.email|default:"—" }}</td>
+            <td style="font-size:.82rem;">{{ teacher.department|default:"—" }}</td>
+            <td style="font-size:.82rem;">
+              {% for subject in teacher.subjects.all %}
+                {{ subject.code }}{% if not forloop.last %}, {% endif %}
+              {% empty %}
+                No subjects assigned
+              {% endfor %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

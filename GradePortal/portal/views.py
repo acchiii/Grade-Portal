@@ -1,0 +1,373 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from .models import Student, Grade, Feedback, Teacher, Admin, Subject, ClassSection, COURSE_CHOICES
+from .forms  import LoginForm, RegisterForm, FeedbackForm, TeacherForm, GradeForm, SubjectForm, ClassSectionForm
+
+from django.contrib.auth import login, logout
+
+
+
+def get_standing(gwa):
+    if gwa is None:    return 'N/A'
+    if gwa <= 1.5:     return ' '
+    if gwa <= 1.75:    return ' '
+    if gwa <= 2.0:     return ' '
+    if gwa <= 3.0:     return ' '
+    return 'Needs Improvement'
+
+def standing_color(gwa):
+    if gwa is None:    return 'var(--text-light)'
+    if gwa <= 2.0:     return 'var(--sky)'
+    if gwa <= 3.0:     return 'var(--green)'
+    return 'var(--red)'
+
+
+
+def index(request):
+    return render(request, 'portal/index.html', {
+        'current':       'index',
+        'grading_scale': [],
+        'hero_pills':    [],
+    })
+
+def admin_login(request):
+    if request.method == 'GET':
+        return redirect('index')
+    
+    if request.method == 'POST':
+        admin_id = request.POST.get('admin_id')
+        password   = request.POST.get('password')
+
+        try:
+            admin = Admin.objects.get(admin_id=admin_id)
+            if admin.check_password(password):
+             
+             request.session.flush()
+             request.session['admin_id'] = admin.admin_id
+             return redirect('admin_panel')
+            else:
+                return render(request, 'portal/index.html', {
+                'error_message': 'Wrong Password!' 
+            })
+        
+        except Admin.DoesNotExist:
+            request.session['error'] = "Invalid Credentials!"
+            return render(request, 'portal/index.html', {
+                'error_message': 'Invalid Credentials!'
+            })
+        
+    
+
+
+def admin_panel(request):
+
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        request.session['error'] = "Something is wrong!"
+        return render(request, 'portal/index.html', {
+                'error_message': 'Invalid Credentials!'
+            })
+    
+    students  = Student.objects.all().order_by('id')
+    feedback  = Feedback.objects.all().order_by('-submitted')
+    grades    = Grade.objects.all()
+
+    grade_rows = []
+    for g in grades:
+        rem = g.remarks or ''
+        if rem == 'PASSED':   pill, gcls = 'pill-pass', 'grade-pass'
+        elif rem == 'FAILED': pill, gcls = 'pill-fail', 'grade-fail'
+        elif rem == 'INC':    pill, gcls = 'pill-inc',  'grade-inc'
+        else:                 pill, gcls = '',           ''
+        grade_rows.append({'grade': g, 'pill': pill, 'gcls': gcls})
+
+    return render(request, 'portal/admin_panel.html', {
+        'current':    'admin',
+        'students':   students,
+        'feedback':   feedback,
+        'grade_rows': grade_rows,
+    })
+
+
+def section_view(request, section_name):
+    teacher = Teacher.objects.get(id=request.session.get('teacher_id'))
+
+    section = ClassSection.objects.get(
+        teacher=teacher,
+        section_name=section_name
+    )
+
+    grades = Grade.objects.filter(section=section).select_related('student')
+    students = section.students.all()
+
+    return render(request, 'portal/teacher_section_view.html', {
+        'section': section,
+        'grades': grades,
+        'students': students,
+    })
+
+def teacher_view(request):
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        return redirect('teacher_login') 
+    
+    try:
+        teacher = Teacher.objects.get(id=teacher_id)
+    except Teacher.DoesNotExist:
+        del request.session['teacher_id']
+        return redirect('teacher_login')
+    
+    subjects = teacher.subjects.all()
+    sections = ClassSection.objects.filter(teacher=teacher)
+
+    grades = Grade.objects.filter(
+        subject__in=subjects
+    ).select_related('student', 'subject')
+
+    subject_grades = {}
+
+    for grade in grades:
+        subj_code = getattr(grade.subject, 'code', str(grade.subject.id))
+
+        if subj_code not in subject_grades:
+            subject_grades[subj_code] = {
+                'subject': grade.subject,
+                'grades': []
+            }
+
+        subject_grades[subj_code]['grades'].append(grade)
+    
+    return render(request, 'portal/teacher.html', {
+        'teacher': teacher,
+        'sections': sections,
+        'subjects': subjects,
+        'subject_grades': subject_grades,
+    })
+
+def teacher_login(request):
+    if request.method == 'POST':
+        teacher_id = request.POST.get('teacher_id')
+        password = request.POST.get('password')
+        try:
+            teacher = Teacher.objects.get(teacher_id=teacher_id)
+            if teacher.check_password(password): 
+                request.session['teacher_id'] = teacher.id
+                return redirect('teacher')
+            else:
+                error_message = 'Invalid credentials'
+        except Teacher.DoesNotExist:
+            error_message = 'Teacher not found'
+    return render(request, 'portal/teacher_login.html', {
+        'error_message': error_message if 'error_message' in locals() else None
+    })
+
+def admin_add_teacher(request):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    if request.method == 'POST':
+        form = TeacherForm(request.POST)
+        if form.is_valid():
+            teacher = form.save(commit=False)
+            teacher.set_password(form.cleaned_data['password'])
+            teacher.save()
+            form.save_m2m()  # Save many-to-many relationships (subjects)
+            return redirect('admin_panel')
+    else:
+        form = TeacherForm()
+    
+    return render(request, 'portal/admin_add_teacher.html', {'form': form})
+
+def admin_subjects(request):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    subjects = Subject.objects.all()
+    return render(request, 'portal/admin_subjects.html', {'subjects': subjects})
+
+def admin_teachers(request):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    course_filter = request.GET.get('course', '')
+    teachers = Teacher.objects.all()
+    
+    if course_filter:
+        teachers = teachers.filter(department__icontains=course_filter)
+    
+    return render(request, 'portal/admin_teachers.html', {
+        'teachers': teachers,
+        'course_filter': course_filter,
+        'course_choices': COURSE_CHOICES
+    })
+
+def admin_add_subject(request):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    if request.method == 'POST':
+        form = SubjectForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_subjects')
+    else:
+        form = SubjectForm()
+    
+    return render(request, 'portal/admin_add_subject.html', {'form': form})
+
+def teacher_add_grade(request):
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        return redirect('teacher_login')
+    
+    teacher = Teacher.objects.get(id=teacher_id)
+    
+    if request.method == 'POST':
+        form = GradeForm(request.POST)
+        form.fields['subject'].queryset = teacher.subjects.all()  # Restrict to teacher's subjects
+        if form.is_valid():
+            grade = form.save()
+            return redirect('teacher')
+    else:
+        form = GradeForm()
+        form.fields['subject'].queryset = teacher.subjects.all()
+    
+    return render(request, 'portal/teacher_add_grade.html', {'form': form, 'teacher': teacher})
+
+def teacher_create_section(request):
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        return redirect('teacher_login')
+    
+    teacher = Teacher.objects.get(id=teacher_id)
+    
+    if request.method == 'POST':
+        form = ClassSectionForm(request.POST)
+        form.fields['subject'].queryset = teacher.subjects.all()  # Only subjects teacher teaches
+        if form.is_valid():
+            section = form.save(commit=False)
+            section.teacher = teacher
+            section.save()
+            form.save_m2m()  # Save many-to-many relationships
+            return redirect('teacher')
+    else:
+        form = ClassSectionForm()
+        form.fields['subject'].queryset = teacher.subjects.all()
+    
+    return render(request, 'portal/teacher_create_section.html', {'form': form, 'teacher': teacher})
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('grades')
+    form = LoginForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        login(request, form.cleaned_data['user'])
+        return redirect('grades')
+    return render(request, 'portal/login.html', {'form': form, 'current': 'login'})
+
+
+def logout_view(request):
+    request.session.flush()
+    logout(request)
+    return redirect('index')
+
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('grades')
+    form = RegisterForm(request.POST or None)
+    success = False
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        success = True
+        form = RegisterForm()   # reset
+    return render(request, 'portal/register.html', {
+        'form': form, 'success': success, 'current': 'register'
+    })
+
+
+@login_required
+def grades_view(request):
+    student = request.user
+    rows    = (Grade.objects
+               .filter(student=student)
+               .select_related('subject')
+               .order_by('-school_yr', 'semester', 'subject__code'))
+
+  
+    total_units, weighted_sum = 0, 0.0
+    for r in rows:
+        if r.final is not None and r.remarks == 'PASSED':
+            total_units  += r.subject.units
+            weighted_sum += r.final * r.subject.units
+    gwa = round(weighted_sum / total_units, 2) if total_units > 0 else None
+
+ 
+    grade_rows = []
+    for r in rows:
+        rem = r.remarks or ''
+        if rem == 'PASSED':   pill, gcls = 'pill-pass', 'grade-pass'
+        elif rem == 'FAILED': pill, gcls = 'pill-fail', 'grade-fail'
+        elif rem == 'INC':    pill, gcls = 'pill-inc',  'grade-inc'
+        else:                 pill, gcls = '',           ''
+        grade_rows.append({'grade': r, 'pill': pill, 'gcls': gcls, 'rem': rem or 'PENDING'})
+
+    return render(request, 'portal/grades.html', {
+        'current':     'grades',
+        'student':     student,
+        'grade_rows':  grade_rows,
+        'row_count':   len(grade_rows),
+        'total_units': total_units,
+        'gwa':         gwa,
+        'gwa_fmt':     f'{gwa:.2f}' if gwa else '—',
+        'standing':    get_standing(gwa),
+        'stand_color': standing_color(gwa),
+    })
+
+
+
+def profile_view(request, pk):
+    if not request.user.is_authenticated :
+        return redirect('login')
+    if not request.user.is_staff and request.user.pk != pk:
+        return redirect('profile', pk=request.user.pk)
+
+    profile = get_object_or_404(Student, pk=pk)
+    is_own  = (request.user.pk == pk)
+    fields  = [
+        ('Student No.',     profile.student_no),
+        ('Full Name',       f'{profile.last_name}, {profile.first_name}'),
+        ('Email',           profile.email),
+        ('Course',          profile.course),
+        ('Year Level',      profile.year_suffix + ' Year'),
+        ('Date Registered', profile.created_at.strftime('%Y-%m-%d %H:%M')),
+    ]
+    return render(request, 'portal/profile.html', {
+
+        'current': 'profile',
+        'profile': profile,
+        'is_own':  is_own,
+        'fields':  fields,
+    })
+
+
+def contact_view(request):
+    form = FeedbackForm(request.POST or None)
+    success = False
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        success = True
+        form = FeedbackForm()   # reset
+    return render(request, 'portal/contact.html', {
+        'form': form, 'success': success, 'current': 'contact'
+    })
+
+
+
+
+

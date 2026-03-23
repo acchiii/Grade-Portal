@@ -1,0 +1,65 @@
+{% extends "portal/base.html" %}
+{% block title %}CEC Grade Portal — Add Teacher{% endblock %}
+
+{% block content %}
+<div class="page-wrap page-wrap-narrow" style="padding-top:2.5rem;">
+
+  <div class="breadcrumb">
+    <a href="{% url 'index' %}">Home</a>
+    <span class="sep">›</span>
+    <a href="{% url 'admin_panel' %}">Admin Panel</a>
+    <span class="sep">›</span>
+    <span>Add Teacher</span>
+  </div>
+
+  <div class="section-header fade-up">
+    <div class="eyebrow">Admin Panel</div>
+    <h2>Add New Teacher</h2>
+    <p>Create a new teacher account.</p>
+  </div>
+
+  <div class="card fade-up-2">
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <small class="form-help">{{ field.help_text }}</small>
+          {% endif %}
+          {% if field.errors %}
+            <div class="form-error">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary btn-full">Add Teacher</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const courseSelect = document.getElementById('id_course');
+      const departmentInput = document.getElementById('id_department');
+
+      if (courseSelect && departmentInput) {
+        const departmentMapping = {
+          'BSIT': 'College of Computer Studies',
+          'BSHM': 'College of Hospitality Management',
+          'BEED': 'College of Education',
+          'BSED': 'College of Education',
+          'BSTM': 'College of Tourism Management',
+          'BSCRIM': 'College of Criminal Justice',
+          'GE': 'General Education',
+        };
+
+        courseSelect.addEventListener('change', function() {
+          const selectedCourse = this.value;
+          departmentInput.value = departmentMapping[selectedCourse] || '';
+        });
+      }
+    });
+  </script>
+
+</div>
+{% endblock %}
