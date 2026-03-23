@@ -1,12 +1,10 @@
 from pathlib import Path
 
-    
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-cec-grade-portal-change-in-production'
-DEBUG = False
-ALLOWED_HOSTS = ['*']
+DEBUG = True
+ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,7 +16,6 @@ INSTALLED_APPS = [
     'portal',
     'tailwind',
     'theme',
-    
 ]
 
 MIDDLEWARE = [
@@ -70,6 +67,11 @@ TIME_ZONE = 'Asia/Manila'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = '/static/'
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TAILWIND_APP_NAME = 'theme'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "theme" / "static",
+    BASE_DIR / "portal" / "static",
+]
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

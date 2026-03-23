@@ -1,18 +1,18 @@
+{% load static %}
 {% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="{% static 'portal/images/banner.png' %}" type="image/x-icon">
   <title>{% block title %}CEC Grade Portal{% endblock %}</title>
-
-<!-- Existing portal CSS -->
-<link rel="stylesheet" href="{% static 'portal/css/style.css' %}">
-
-<!-- Tailwind CSS -->
-<link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+  
 
   {% tailwind_css %}
+  <link rel="stylesheet" href="{% static 'portal/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+
   <style>
     #frm{
       display: none;
@@ -94,7 +94,8 @@
 <header class="navbar">
   <div class="navbar-inner">
     <a href="{% url 'index' %}" class="navbar-brand">
-      <div class="brand-emblem"><img src="{% static 'portal/images/banner.png' %}" class="rounded-full"></div>
+      <div class="brand-emblem">
+        <img src="{% static 'portal/images/banner.png' %}" class="rounded-full" ></div>
       <div class="brand-text">
         <div class="brand-name">Cebu Eastern College</div>
         <div class="brand-sub">Student Grade Portal</div>

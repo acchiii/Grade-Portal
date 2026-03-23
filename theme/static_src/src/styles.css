@@ -1,10 +1,10 @@
-/* Tailwind directives */
-@tailwind base;
-@tailwind components;
+/* 1. Tailwind reset */
+@import "tailwindcss/preflight";
+
+/* 2. Tell Tailwind where to scan for classes */
+@source "../../../portal/templates/**/*.html";
+@source "../../../portal/static/**/*.js"; 
+@source "../../templates/*.html"; 
+
+/* 3. Tailwind utilities */
 @tailwind utilities;
-
-/* Scan your templates for classes */
-@source "../../portal/templates/**/*.html";
-
-/* Optional: scan your JS if you have classes there */
-@source "../../portal/static/**/*.js";
