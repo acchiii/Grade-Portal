@@ -1,7 +1,6 @@
 from pathlib import Path
-import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+    
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,6 +18,7 @@ INSTALLED_APPS = [
     'portal',
     'tailwind',
     'theme',
+    
 ]
 
 MIDDLEWARE = [
@@ -71,6 +71,5 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TAILWIND_APP_NAME = 'theme'

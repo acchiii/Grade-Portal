@@ -5,8 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}CEC Grade Portal{% endblock %}</title>
-  
-  <link rel="stylesheet" href="{% static 'portal/css/style.css' %}">
+
+<!-- Existing portal CSS -->
+<link rel="stylesheet" href="{% static 'portal/css/style.css' %}">
+
+<!-- Tailwind CSS -->
+<link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+
   {% tailwind_css %}
   <style>
     #frm{
