@@ -1,2 +1,2 @@
 [deploy]
-start = "gunicorn gradeportal.wsgi:application --bind 0.0.0.0:$PORT"
+start = "gunicorn GradePortal.wsgi:application --bind 0.0.0.0:$PORT"
