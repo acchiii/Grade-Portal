@@ -1,0 +1,39 @@
+{% extends 'portal/base.html' %}
+{% block title %}
+  CEC Grade Portal — Teacher Dashboard
+{% endblock %}
+
+{% block content %}
+  <div class="page-wrap" style="padding-top:2.5rem;">
+    <div class="breadcrumb">
+      <a href="{% url 'index' %}">Home</a>
+      <span class="sep">›</span>
+      <a href="{% url 'teacher' %}">Teacher Dashboard</a>
+      <span class="sep">›</span>
+      <span>Add Student to Section</span>
+    </div>
+
+    <div class="section-header fade-up">
+      <div class="eyebrow">Teacher Panel</div>
+      <h2>Add to Section {{ section.section_name }} </h2>
+      <p>Add students in your subjects.</p>
+    </div>
+
+    <div class="card fade-up-2">
+      {% comment %} <h2>Add Student to {{ section.section_name }}</h2> {% endcomment %}
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <label>Select Student</label>
+        <select name="student_id" required>
+          {% for student in students %}
+            <option value="{{ student.id }}">{{ student.last_name }}, {{ student.first_name }} ({{ student.student_no }})</option>
+          {% endfor %}
+        </select>
+
+        <button type="submit">Add Student</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

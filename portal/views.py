@@ -3,8 +3,10 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Student, Grade, Feedback, Teacher, Admin, Subject, ClassSection, COURSE_CHOICES
 from .forms  import LoginForm, RegisterForm, FeedbackForm, TeacherForm, GradeForm, SubjectForm, ClassSectionForm
-
+from django.db.models import Prefetch
 from django.contrib.auth import login, logout
+from django.contrib import messages
+
 
 
 
@@ -90,23 +92,147 @@ def admin_panel(request):
     })
 
 
-def section_view(request, section_name):
-    teacher = Teacher.objects.get(id=request.session.get('teacher_id'))
+def section_view(request, section_name, subject_code, semester, school_yr):
 
-    section = ClassSection.objects.get(
+    teacher_id = request.session.get('teacher_id')
+
+    if not teacher_id:
+        return redirect('teacher_login')
+
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+
+    section = get_object_or_404(
+        ClassSection.objects.prefetch_related('students'),
+        section_name=section_name,
         teacher=teacher,
-        section_name=section_name
+        subject__code=subject_code,
+        semester=semester,
+        school_yr=school_yr
     )
 
-    grades = Grade.objects.filter(section=section).select_related('student')
-    students = section.students.all()
+    students = section.students.all().prefetch_related(
+        Prefetch(
+            'grades',
+            queryset=Grade.objects.filter(
+                section=section,
+                subject=section.subject
+            ),
+            to_attr='section_grades'
+        )
+    )
 
+    
+    if request.method == "POST":
+        for student in students:
+            grade, created = Grade.objects.get_or_create(
+                student=student,
+                subject=section.subject,
+                section=section,
+                semester=section.semester,
+                school_yr=section.school_yr
+            )
+
+            grade.prelim = request.POST.get(f'prelim_{student.id}') or grade.prelim
+            grade.midterm = request.POST.get(f'midterm_{student.id}') or grade.midterm
+            grade.semi = request.POST.get(f'semi_{student.id}') or grade.semi
+            grade.final = request.POST.get(f'final_{student.id}') or grade.final
+            try:
+                    grade.save()
+                    messages.success(request, "Saved!")
+            except Exception as e:
+                    messages.error(request, str(e))
+                        
+            return redirect('section_view', section.section_name, subject_code, semester, school_yr)
+
+      
     return render(request, 'portal/teacher_section_view.html', {
-        'section': section,
-        'grades': grades,
-        'students': students,
-    })
+    'section': section,
+    'students': students,
+})
 
+def add_student_to_section(request, section_id):
+    teacher_id = request.session.get('teacher_id')
+
+    if not teacher_id:
+        return redirect('teacher_login')
+
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+    section = get_object_or_404(ClassSection, id=section_id, teacher=teacher)
+
+    if request.method == "POST":
+        student_id = request.POST.get('student_id')
+
+        student = get_object_or_404(Student, id=student_id)
+
+        # Add student to section
+        section.students.add(student)
+
+        # Create grade if not exists
+        Grade.objects.get_or_create(
+            student=student,
+            subject=section.subject,
+            section=section,
+            semester=section.semester,
+            school_yr=section.school_yr
+        )
+
+        return redirect('section_view', 
+                        section.section_name,
+                        section.subject.code,
+                        section.semester,
+                        section.school_yr)
+
+    # students not yet in section
+    students = Student.objects.exclude(id__in=section.students.values_list('id', flat=True))
+
+    return render(request, 'portal/add_student.html', {
+        'section': section,
+        'students': students
+    })
+def bulk_add_students(request, section_id):
+    teacher_id = request.session.get('teacher_id')
+
+    if not teacher_id:
+        return redirect('teacher_login')
+
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+    section = get_object_or_404(ClassSection, id=section_id, teacher=teacher)
+
+    if request.method == "POST":
+        student_ids = request.POST.getlist('students')
+
+        for sid in student_ids:
+            student = Student.objects.filter(id=sid).first()
+            if not student:
+                continue
+
+            # add to M2M safely
+            section.students.add(student)
+
+            # ensure grade exists
+            Grade.objects.get_or_create(
+                student=student,
+                subject=section.subject,
+                section=section,
+                semester=section.semester,
+                school_yr=section.school_yr
+            )
+
+        return redirect('section_view',
+                        section.section_name,
+                        section.subject.code,
+                        section.semester,
+                        section.school_yr)
+
+    # exclude already added students
+    students = Student.objects.exclude(
+        id__in=section.students.values_list('id', flat=True)
+    )
+
+    return render(request, 'portal/bulk_add_students.html', {
+        'section': section,
+        'students': students
+    })
 def teacher_view(request):
     teacher_id = request.session.get('teacher_id')
     if not teacher_id:
@@ -144,6 +270,8 @@ def teacher_view(request):
         'subjects': subjects,
         'subject_grades': subject_grades,
     })
+
+
 
 def teacher_login(request):
     if request.method == 'POST':

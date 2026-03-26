@@ -22,7 +22,11 @@
       <ul class="pl-2">
         <br>
         {% for section in sections %}
-          <li><a href="{% url 'teacher_section_view' section.section_name %}">{{ section.subject }} — {{ section.section_name }}</a></li>
+          <li>
+  <a href="{% url 'section_view' section.section_name section.subject.code section.semester section.school_yr %}">
+    {{ section.subject }} — {{ section.section_name }}
+  </a>
+</li>
         {% endfor %}
         <br>
 
@@ -64,9 +68,10 @@
         <thead>
           <tr>
             <th>Student</th>
+            <th>Prelim</th>
             <th>Midterm</th>
-            <th>Final</th>
-            <th>Grade</th>
+            <th>Semi</th>
+            <th>Finals</th>
             <th>Remarks</th>
           </tr>
         </thead>
@@ -74,9 +79,10 @@
           {% for grade in data.grades %}
             <tr>
               <td>{{ grade.student.last_name }}, {{ grade.student.first_name }}</td>
-              <td>{{ grade.midterm_raw|default:"—" }}</td>
-              <td>{{ grade.finals_raw|default:"—" }}</td>
-              <td>{{ grade.final_grade|default:"—" }}</td>
+              <td>{{ grade.prelim|default:"—" }}</td>
+              <td>{{ grade.midterm|default:"—" }}</td>
+              <td>{{ grade.semi|default:"—" }}</td>
+              <td>{{ grade.final|default:"—" }}</td>
               <td>{{ grade.remarks|default:"—" }}</td>
             </tr>
           {% endfor %}

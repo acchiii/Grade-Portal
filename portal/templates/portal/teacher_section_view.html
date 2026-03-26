@@ -19,29 +19,118 @@
       <p>Your students in this section.</p>
     </div>
 
-    <div class="card fade-up-2 w-full">
-     <table>
-  <thead>
-    <tr>
-      <th class="text-left">Name</th>
-      <th class="text-left">Prelim</th>
-      <th class="text-left">Midterm</th>
-      <th class="text-left">Semi</th>
-      <th class="text-left">Final</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for item in grades %}
-<tr>
-  <td>{{ item.student.last_name }}, {{ item.student.first_name }}</td>
-  <td>{{ item.prelim }}</td>
-  <td>{{ item.midterm }}</td>
-  <td>{{ item.semi }}</td>
-  <td>{{ item.final }}</td>
-</tr>
-{% endfor %}
-  </tbody>
-</table>
+    <div class="card fade-up-2 w-[60vw] bg-red-600">
+<form method="POST">
+  {% csrf_token %}
+
+  <!-- HEADER CONTROLS -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; gap:10px;">
+
+    <!-- SEARCH -->
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search student..."
+      onkeyup="filterStudents()"
+      style="padding:8px; width:250px; border:1px solid #ccc; border-radius:6px;"
+    >
+
+    <!-- ADD STUDENT -->
+    <a href="{% url 'bulk_add_students' section.id %}"
+       style="padding:8px 12px; background:#2563eb; color:white; border-radius:6px; text-decoration:none;">
+      + Add Student
+    </a>
+
+    <!-- SAVE BUTTON -->
+    <button type="submit"
+      style="padding:8px 14px; background:#16a34a; color:white; border:none; border-radius:6px; cursor:pointer;">
+      Save Grades
+    </button>
+  </div>
+
+  <!-- TABLE -->
+  <div style="overflow-x:auto;">
+    <table style="width:100%; border-collapse:collapse; font-family:Arial;">
+
+      <thead>
+        <tr style="background:#f3f4f6;">
+          <th style="text-align:left; padding:10px;">Name</th>
+          <th style="padding:10px;">Prelim</th>
+          <th style="padding:10px;">Midterm</th>
+          <th style="padding:10px;">Semi</th>
+          <th style="padding:10px;">Final</th>
+        </tr>
+      </thead>
+
+      <tbody id="studentTable">
+        {% for student in students %}
+        {% with grade=student.section_grades.0 %}
+        <tr class="student-row" style="border-bottom:1px solid #eee;">
+
+          <!-- NAME -->
+          <td style="padding:10px;">
+            {{ student.last_name }}, {{ student.first_name }}
+          </td>
+
+          <!-- GRADES -->
+          <td style="padding:8px;">
+            <input type="number" step="0.01"
+                   name="prelim_{{ grade.id }}"
+                   value="{{ grade.prelim }}"
+                   min="1" max="5"
+                   style="width:70px; padding:5px;">
+          </td>
+
+          <td style="padding:8px;">
+            <input type="number" step="0.01"
+                   name="midterm_{{ grade.id }}"
+                   value="{{ grade.midterm }}"
+                   style="width:70px; padding:5px;">
+          </td>
+
+          <td style="padding:8px;">
+            <input type="number" step="0.01"
+                   name="semi_{{ grade.id }}"
+                   value="{{ grade.semi }}"
+                   style="width:70px; padding:5px;">
+          </td>
+
+          <td style="padding:8px;">
+            <input type="number" step="0.01"
+                   name="final_{{ grade.id }}"
+                   value="{{ grade.final }}"
+                   style="width:70px; padding:5px;">
+          </td>
+
+        </tr>
+        {% endwith %}
+        {% endfor %}
+      </tbody>
+      {% if messages %}
+  {% for message in messages %}
+    <p style="color:green;">{{ message }}</p>
+  {% endfor %}
+{% endif %}
+    </table>
+  </div>
+</form>
     </div>
   </div>
+  <script>
+function filterStudents() {
+    let input = document.getElementById("searchInput");
+    let filter = input.value.toLowerCase();
+    let rows = document.getElementsByClassName("student-row");
+
+    for (let i = 0; i < rows.length; i++) {
+        let name = rows[i].innerText.toLowerCase();
+
+        if (name.includes(filter)) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+}
+</script>
 {% endblock %}
