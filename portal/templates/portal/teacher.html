@@ -61,7 +61,7 @@
     
   </div>
 
-  {% for subj_code, data in subject_grades.items %}
+  {% comment %} {% for subj_code, data in subject_grades.items %}
     <div class="card fade-up-3">
       <h3>{{ data.subject.title }} ({{ subj_code }})</h3>
       <table class="table">
@@ -89,7 +89,7 @@
         </tbody>
       </table>
     </div>
-  {% endfor %}
+  {% endfor %} {% endcomment %}
 
 </div>
 {% endblock %}
