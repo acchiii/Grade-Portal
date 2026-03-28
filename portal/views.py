@@ -576,9 +576,9 @@ def contact_view(request):
     })
 
 
-def error404(request, error):
+def error404(request, exception=None):
     return render(request, 'portal/404.html', {
-        error: error,
+        'error': str(exception),
     })
 
 def error500(request):
