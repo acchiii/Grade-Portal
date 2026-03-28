@@ -119,22 +119,33 @@
       {% endif %}
 
       <li><a href="{% url 'contact' %}" {% if current == 'contact' %}class="active"{% endif %}>Contact</a></li>    
-        <li><a href="{% url 'teacher_login' %}" class="teacher-link"> Teacher</a></li>    
-          <li><a href="{% url 'admin_login' %}" id="adminbtn" class="admin-link" style="border-radius: 100%; padding: .4rem .4rem;">🔒</a></li>
 
+       {% if not request.user.is_authenticated or request.session.admin_id %}
+        <li><a href="{% url 'teacher_login' %}" {% if current == 'teacher' %}class="active"{% endif %}>Teacher</a></li>    
+          <li><a href="{% url 'admin_login' %}" id="adminbtn" class="admin-link border-full">
+             <div class="nav-avatar"> <img src="{% static 'portal/images/administrator.png' %}"  alt="Admin" width="100%" height="100%" class="rounded-full"></div>
+            </a></li>
+        {% endif %}
       {% if request.user.is_authenticated or request.session.admin_id %}
         <li>
           <div class="nav-user">
-            <div class="nav-avatar">{{ request.user.first_name|first|upper }}</div>
-            <a href="{% url 'logout' %}"
-               style="font-size:.75rem; padding:.4rem .4rem;background:rgba(255,255,255,.1);
-                      color:rgba(255,255,255,1) !important;border-radius: 100%;border:1px solid rgba(255,255,255,.15);">
-             &nbsp; &nbsp;x&nbsp;&nbsp;
-            </a>
+            
+            {% if  not request.session.admin_id %}
+            {% comment %} <div class="nav-avatar">{{ request.user.first_name|first|upper }}</div> {% endcomment %}
+            <div class="nav-avatar hidden"> <img src="{% static 'portal/images/profile.png' %}"  alt="Profile" width="100%" height="100%"></div>
+            {% endif %}
+              
+
+            <a href="{% url 'logout' %}" class="border-full w-full h-full">
+            <div class="nav-avatar">
+                 <img src="{% static 'portal/images/logout.png' %}"  alt="Logout" width="100%" height="100%">
+                </div>
+              </a>
+
           </div>
         </li>
       {% else %}
-        <li><a href="{% url 'login' %}" class="btn-nav">Sign In</a></li>
+        {% comment %} <li><a href="{% url 'login' %}" class="btn-nav">Sign In</a></li> {% endcomment %}
       {% endif %}
     </ul>
 
@@ -281,7 +292,7 @@ const frm = document.getElementById('frm');
          
     });
 
-    // Mobile menu functionality
+  
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     
@@ -293,7 +304,7 @@ const frm = document.getElementById('frm');
             console.log('Menu active:', mobileMenu.classList.contains('active'));
         });
         
-        // Close menu when clicking on links
+      
         mobileMenu.addEventListener('click', function(e) {
             if (e.target.tagName === 'A') {
                 mobileMenuBtn.classList.remove('active');

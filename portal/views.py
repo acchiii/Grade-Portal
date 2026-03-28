@@ -75,14 +75,6 @@ def admin_panel(request):
     grades    = Grade.objects.all()
 
     grade_rows = []
-    for g in grades:
-        rem = g.remarks or ''
-        if rem == 'PASSED':   pill, gcls = 'pill-pass', 'grade-pass'
-        elif rem == 'FAILED': pill, gcls = 'pill-fail', 'grade-fail'
-        elif rem == 'INC':    pill, gcls = 'pill-inc',  'grade-inc'
-        else:                 pill, gcls = '',           ''
-        grade_rows.append({'grade': g, 'pill': pill, 'gcls': gcls})
-
     return render(request, 'portal/admin_panel.html', {
         'current':    'admin',
         'students':   students,
