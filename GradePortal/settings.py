@@ -3,8 +3,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-cec-grade-portal-change-in-production'
-DEBUG = True
-ALLOWED_HOSTS = []
+DEBUG = False
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -20,6 +20,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -60,7 +61,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/grades/'
 LOGOUT_REDIRECT_URL = '/'
 
-AUTH_PASSWORD_VALIDATORS = []   # Intentionally relaxed to mirror original
+AUTH_PASSWORD_VALIDATORS = []  
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Manila'
@@ -73,5 +74,6 @@ STATICFILES_DIRS = [
     BASE_DIR / "theme" / "static",
     BASE_DIR / "portal" / "static",
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

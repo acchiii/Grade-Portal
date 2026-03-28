@@ -9,7 +9,6 @@ from django.contrib import messages
 
 
 
-
 def get_standing(gwa):
     if gwa is None:    return 'N/A'
     if gwa <= 1.5:     return ' '
@@ -575,6 +574,15 @@ def contact_view(request):
     return render(request, 'portal/contact.html', {
         'form': form, 'success': success, 'current': 'contact'
     })
+
+
+def error404(request, error):
+    return render(request, 'portal/404.html', {
+        error: error,
+    })
+
+def error500(request):
+    return render(request, 'portal/500.html')
 
 
 
