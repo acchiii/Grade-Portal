@@ -1,95 +1,95 @@
-{% extends "portal/base.html" %}
-{% block title %}CEC Grade Portal — Teacher Dashboard{% endblock %}
+{% extends 'portal/base.html' %}
+{% block title %}
+  CEC Grade Portal — Teacher Dashboard
+{% endblock %}
 
 {% block content %}
-<div class="page-wrap" style="padding-top:2.5rem;">
-
-  <div class="breadcrumb">
-    <a href="{% url 'index' %}">Home</a>
-    <span class="sep">›</span>
-    <span>Teacher Dashboard</span>
-  </div>
-
-  <div class="section-header fade-up">
-    <div class="eyebrow">Welcome, {{ teacher.name }}</div>
-    <h2>Teacher Dashboard</h2>
-    <p>Manage your subjects and student grades.</p>
-  </div>
-
-  <div class="grid grid-3 fade-up-2">
-    <div class="card">
-      <h3 class="text-md mb-10px">{% if sections|length > 0 %}Your Sections{% else %}No Section Available {% endif %}</h3>
-      <ul class="pl-2">
-        <br>
-        {% for section in sections %}
-          <li>
-  <a href="{% url 'section_view' section.section_name section.subject.code section.semester section.school_yr %}">
-    {{ section.subject }} — {{ section.section_name }}
-  </a>
-</li>
-        {% endfor %}
-        <br>
-
-      </ul>
-      
-            <div class="w-full h-fit flex justify-end items-end">
-              <a href="{% url 'teacher_create_section' %}" class="btn btn-primary p-8" style="padding: 8px 16px; border-radius: 100%;">+</a>
-            </div>
+  <div class="page-wrap" style="padding-top:2.5rem;">
+    <div class="breadcrumb">
+      <a href="{% url 'index' %}">Home</a>
+      <span class="sep">›</span>
+      <span>Teacher Dashboard</span>
     </div>
 
-    <div class="card">
-      <h3 class="text-md mb-10px">Your Subjects</h3>
-      <ul>
-        <br>
-        {% for subject in subjects %}
-          <li>{{ subject.code }} — {{ subject.title }}</li>
-        {% endfor %}
-      </ul>
+    <div class="section-header fade-up">
+      <div class="eyebrow">Welcome, {{ teacher.name }}</div>
+      <h2>Teacher Dashboard</h2>
+      <p>Manage your subjects and student grades.</p>
     </div>
 
-    {% comment %} <div class="card">
-      <h3>Grade Management</h3>
-      <br>
-      <p>View and add grades for students in your subjects.</p>
-      <br>
-      <div class="w-full h-fit flex justify-end items-end">
-
-        <a href="{% url 'teacher_add_grade' %}" class="btn btn-primary" style="padding: 8px 16px; border-radius: 100%;">+</a>
-      </div>
-    </div> {% endcomment %}
-
-    
-  </div>
-
-  {% comment %} {% for subj_code, data in subject_grades.items %}
-    <div class="card fade-up-3">
-      <h3>{{ data.subject.title }} ({{ subj_code }})</h3>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Prelim</th>
-            <th>Midterm</th>
-            <th>Semi</th>
-            <th>Finals</th>
-            <th>Remarks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for grade in data.grades %}
-            <tr>
-              <td>{{ grade.student.last_name }}, {{ grade.student.first_name }}</td>
-              <td>{{ grade.prelim|default:"—" }}</td>
-              <td>{{ grade.midterm|default:"—" }}</td>
-              <td>{{ grade.semi|default:"—" }}</td>
-              <td>{{ grade.final|default:"—" }}</td>
-              <td>{{ grade.remarks|default:"—" }}</td>
-            </tr>
+    <div class="grid grid-3 fade-up-2">
+      <div class="card">
+        <h3 class="text-md mb-10px">
+          {% if sections|length > 0 %}
+            Your Sections
+          {% else %}
+            No Section Available
+          {% endif %}
+        </h3>
+        <ul class="pl-2">
+          <br />
+          {% for section in sections %}
+            <li>
+              <a href="{% url 'section_view' section.section_name section.subject.code section.semester section.school_yr %}">{{ section.subject }} — {{ section.section_name }}</a>
+            </li>
           {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  {% endfor %} {% endcomment %}
+          <br />
+        </ul>
 
-</div>
+        <div class="w-full h-fit flex justify-end items-end">
+          <a href="{% url 'teacher_create_section' %}" class="btn btn-primary p-8" style="padding: 8px 16px; border-radius: 100%;">+</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="text-md mb-10px">Your Subjects</h3>
+        <ul>
+          <br />
+          {% for subject in subjects %}
+            <li>{{ subject.code }} — {{ subject.title }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      {% comment %} <div class="card">
+        <h3>Grade Management</h3>
+        <br />
+        <p>View and add grades for students in your subjects.</p>
+        <br />
+        <div class="w-full h-fit flex justify-end items-end">
+          <a href="{% url 'teacher_add_grade' %}" class="btn btn-primary" style="padding: 8px 16px; border-radius: 100%;">+</a>
+        </div>
+      </div> {% endcomment %}
+    </div>
+
+    {% comment %} {% for subj_code, data in subject_grades.items %}
+      <div class="card fade-up-3">
+        <h3>{{ data.subject.title }} ({{ subj_code }})</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Prelim</th>
+              <th>Midterm</th>
+              <th>Semi</th>
+              <th>Finals</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for grade in data.grades %}
+              <tr>
+                <td>{{ grade.student.last_name }}, {{ grade.student.first_name }}</td>
+                <td>{{ grade.prelim|default:'—' }}</td>
+                <td>{{ grade.midterm|default:'—' }}</td>
+                <td>{{ grade.semi|default:'—' }}</td>
+                <td>{{ grade.final|default:'—' }}</td>
+                <td>{{ grade.remarks|default:'—' }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endfor %} {% endcomment %}
+  </div>
 {% endblock %}

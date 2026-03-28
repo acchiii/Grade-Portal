@@ -15,52 +15,46 @@
 
     <div class="section-header fade-up">
       <div class="eyebrow">Teacher Panel</div>
-      <h2>Add to Section {{ section.section_name }} </h2>
+      <h2>Add to Section {{ section.section_name }}</h2>
       <p>Add students in your subjects.</p>
     </div>
 
     <div class="card fade-up-2">
       {% comment %} <h2>Add Student to {{ section.section_name }}</h2> {% endcomment %}
 
-     <h2>Bulk Add Students</h2>
+      <h2>Bulk Add Students</h2>
 
-<form method="POST">
-  {% csrf_token %}
+      <form method="POST">
+        {% csrf_token %}
 
-  <div style="margin-bottom:10px;">
-    <input type="text" id="search" placeholder="Search student..."
-           onkeyup="filterList()"
-           style="padding:8px; width:250px;">
-  </div>
+        <div style="margin-bottom:10px;">
+          <input type="text" id="search" placeholder="Search student..." onkeyup="filterList()" style="padding:8px; width:250px;" />
+        </div>
 
-  <div id="studentList" style="max-height:300px; overflow:auto; border:1px solid #ccc; padding:10px;">
-    
-    {% for student in students %}
-      <label class="student-item" style="display:block; margin:5px 0;">
-        <input type="checkbox" name="students" value="{{ student.id }}">
-        {{ student.last_name }}, {{ student.first_name }} ({{ student.student_no }})
-      </label>
-    {% endfor %}
+        <div id="studentList" style="max-height:300px; overflow:auto; border:1px solid #ccc; padding:10px;">
+          {% for student in students %}
+            <label class="student-item" style="display:block; margin:5px 0;">
+              <input type="checkbox" name="students" value="{{ student.id }}" />
+              {{ student.last_name }}, {{ student.first_name }} ({{ student.student_no }})
+            </label>
+          {% endfor %}
+        </div>
 
-  </div>
+        <br />
 
-  <br>
-
-  <button type="submit" style="padding:8px 12px;">
-    Add Selected Students
-  </button>
-</form>
+        <button type="submit" style="padding:8px 12px;">Add Selected Students</button>
+      </form>
     </div>
   </div>
   <script>
-function filterList() {
-    let input = document.getElementById("search").value.toLowerCase();
-    let items = document.getElementsByClassName("student-item");
-
-    for (let i = 0; i < items.length; i++) {
-        let text = items[i].innerText.toLowerCase();
-        items[i].style.display = text.includes(input) ? "" : "none";
+    function filterList() {
+      let input = document.getElementById('search').value.toLowerCase()
+      let items = document.getElementsByClassName('student-item')
+    
+      for (let i = 0; i < items.length; i++) {
+        let text = items[i].innerText.toLowerCase()
+        items[i].style.display = text.includes(input) ? '' : 'none'
+      }
     }
-}
-</script>
+  </script>
 {% endblock %}

@@ -1,47 +1,46 @@
-{% extends "portal/base.html" %}
-{% block title %}CEC Grade Portal — Subjects{% endblock %}
+{% extends 'portal/base.html' %}
+{% block title %}
+  CEC Grade Portal — Subjects
+{% endblock %}
 
 {% block content %}
-<div class="page-wrap" style="padding-top:2.5rem;">
+  <div class="page-wrap" style="padding-top:2.5rem;">
+    <div class="breadcrumb">
+      <a href="{% url 'index' %}">Home</a>
+      <span class="sep">›</span>
+      <a href="{% url 'admin_panel' %}">Admin Panel</a>
+      <span class="sep">›</span>
+      <span>Subjects</span>
+    </div>
 
-  <div class="breadcrumb">
-    <a href="{% url 'index' %}">Home</a>
-    <span class="sep">›</span>
-    <a href="{% url 'admin_panel' %}">Admin Panel</a>
-    <span class="sep">›</span>
-    <span>Subjects</span>
-  </div>
-  
-  <div class="section-header fade-up">
-    <div class="eyebrow">Admin Panel</div>
-    <h2>All Subjects</h2>
-    <p>List of all subjects in the system.</p>
-  </div>
-  
-  
-  <div class="card fade-up-2 w-full justify-items-stretch">
-    <table class="table">
-      <tr class="mb-8">
-        <thead>
-          <th class="text-left">Code</th>
-          <th class="text-left hidden md:flex">Title</th>
-          <th class="text-left">Units</th>
-          <th class="text-left">Department</th>
+    <div class="section-header fade-up">
+      <div class="eyebrow">Admin Panel</div>
+      <h2>All Subjects</h2>
+      <p>List of all subjects in the system.</p>
+    </div>
+
+    <div class="card fade-up-2 w-full justify-items-stretch">
+      <table class="table">
+        <tr class="mb-8">
+          <thead>
+            <th class="text-left">Code</th>
+            <th class="text-left hidden md:flex">Title</th>
+            <th class="text-left">Units</th>
+            <th class="text-left">Department</th>
+          </thead>
         </tr>
-      </thead>
-      <tbody>
-        {% for subject in subjects %}
-        <tr>
-          <td >{{ subject.code }}</td>
-          <td class="hidden md:flex">{{ subject.title }}</td>
-            <td >{{ subject.units }}</td>
-            <td >{{ subject.department }}</td>
-          </tr>
+        <tbody>
+          {% for subject in subjects %}
+            <tr>
+              <td>{{ subject.code }}</td>
+              <td class="hidden md:flex">{{ subject.title }}</td>
+              <td>{{ subject.units }}</td>
+              <td>{{ subject.department }}</td>
+            </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
     <a href="{% url 'admin_add_subject' %}" class="btn btn-primary w-20 rounded">+</a>
-    
   </div>
-  {% endblock %}
+{% endblock %}

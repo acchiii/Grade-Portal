@@ -1,38 +1,38 @@
-{% extends "portal/base.html" %}
-{% block title %}CEC Grade Portal — Add Subject{% endblock %}
+{% extends 'portal/base.html' %}
+{% block title %}
+  CEC Grade Portal — Add Subject
+{% endblock %}
 
 {% block content %}
-<div class="page-wrap page-wrap-narrow" style="padding-top:2.5rem;">
+  <div class="page-wrap page-wrap-narrow" style="padding-top:2.5rem;">
+    <div class="breadcrumb">
+      <a href="{% url 'index' %}">Home</a>
+      <span class="sep">›</span>
+      <a href="{% url 'admin_panel' %}">Admin Panel</a>
+      <span class="sep">›</span>
+      <span>Add Subject</span>
+    </div>
 
-  <div class="breadcrumb">
-    <a href="{% url 'index' %}">Home</a>
-    <span class="sep">›</span>
-    <a href="{% url 'admin_panel' %}">Admin Panel</a>
-    <span class="sep">›</span>
-    <span>Add Subject</span>
+    <div class="section-header fade-up">
+      <div class="eyebrow">Admin Panel</div>
+      <h2>Add New Subject</h2>
+      <p>Create a new subject for the system.</p>
+    </div>
+
+    <div class="card fade-up-2">
+      <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="form-error">{{ field.errors.0 }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-full">Add Subject</button>
+      </form>
+    </div>
   </div>
-
-  <div class="section-header fade-up">
-    <div class="eyebrow">Admin Panel</div>
-    <h2>Add New Subject</h2>
-    <p>Create a new subject for the system.</p>
-  </div>
-
-  <div class="card fade-up-2">
-    <form method="POST">
-      {% csrf_token %}
-      {% for field in form %}
-        <div class="form-group">
-          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <div class="form-error">{{ field.errors.0 }}</div>
-          {% endif %}
-        </div>
-      {% endfor %}
-      <button type="submit" class="btn btn-primary btn-full">Add Subject</button>
-    </form>
-  </div>
-
-</div>
 {% endblock %}

@@ -1,108 +1,114 @@
-{% extends "portal/base.html" %}
-{% block title %}Contact Registrar — CEC Grade Portal{% endblock %}
+{% extends 'portal/base.html' %}
+{% block title %}
+  Contact Registrar — CEC Grade Portal
+{% endblock %}
 
 {% block content %}
-<div class="page-wrap page-wrap-mid" style="padding-top:2.5rem;">
-
-  <div class="breadcrumb">
-    <a href="{% url 'index' %}">Home</a>
-    <span class="sep">›</span>
-    <span>Contact</span>
-  </div>
-
-  <div class="contact-grid">
-
-    <!-- Form -->
-    <div>
-      <div class="section-header fade-up">
-        <div class="eyebrow">Registrar&rsquo;s Office</div>
-        <h2>Feedback &amp; Inquiries</h2>
-        <p>Send a message to the CEC Registrar&rsquo;s Office for grade concerns,
-           transcript requests, or enrollment inquiries.</p>
-      </div>
-
-      <div class="card fade-up-2">
-        <div class="card-header"><h3>Submit a Message</h3></div>
-
-        {% if success %}
-          <div class="alert alert-success">
-            <span class="alert-icon">&#10003;</span>
-            <div>Your message has been submitted. The Registrar&rsquo;s Office will
-                 respond within 3&ndash;5 business days.</div>
-          </div>
-        {% endif %}
-        {% if form.errors %}
-          <div class="alert alert-error">
-            <span class="alert-icon">&#10007;</span>
-            <div>{% for f in form %}{% for e in f.errors %}{{ e }}{% endfor %}{% endfor %}</div>
-          </div>
-        {% endif %}
-
-        <form method="POST" action="{% url 'contact' %}">
-          {% csrf_token %}
-          <div class="form-row form-row-2">
-            <div class="form-group">
-              <label for="id_name">Full Name <span style="color:var(--red);">*</span></label>
-              {{ form.name }}
-            </div>
-            <div class="form-group">
-              <label for="id_email">Email Address</label>
-              {{ form.email }}
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="id_subject">Subject / Concern</label>
-            {{ form.subject }}
-          </div>
-          <div class="form-group">
-            <label for="id_message">Message <span style="color:var(--red);">*</span></label>
-            {{ form.message }}
-          </div>
-          <button type="submit" class="btn btn-primary btn-full">Submit Message</button>
-        </form>
-      </div>
+  <div class="page-wrap page-wrap-mid" style="padding-top:2.5rem;">
+    <div class="breadcrumb">
+      <a href="{% url 'index' %}">Home</a>
+      <span class="sep">›</span>
+      <span>Contact</span>
     </div>
 
-    <!-- Sidebar -->
-    <div class="fade-up-3">
-      <div class="card">
-        <h3 style="margin-bottom:1.2rem;">Registrar&rsquo;s Office</h3>
-        <div style="display:flex;flex-direction:column;gap:.9rem;font-size:.87rem;">
-          <div>
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;
-                        text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem;">Address</div>
-            <div>Leon Kilat St., Cebu City<br>Philippines 6000</div>
+    <div class="contact-grid">
+      <!-- Form -->
+      <div>
+        <div class="section-header fade-up">
+          <div class="eyebrow">Registrar&rsquo;s Office</div>
+          <h2>Feedback &amp; Inquiries</h2>
+          <p>Send a message to the CEC Registrar&rsquo;s Office for grade concerns, transcript requests, or enrollment inquiries.</p>
+        </div>
+
+        <div class="card fade-up-2">
+          <div class="card-header">
+            <h3>Submit a Message</h3>
           </div>
-          <div class="divider" style="margin:.1rem 0;"></div>
-          <div>
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;
-                        text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem;">Email</div>
-            <div>registrar@cec.edu.ph</div>
-          </div>
-          <div class="divider" style="margin:.1rem 0;"></div>
-          <div>
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;
-                        text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem;">Office Hours</div>
-            <div>Mon&ndash;Fri: 8:00 AM &ndash; 5:00 PM<br>Sat: 8:00 AM &ndash; 12:00 PM</div>
-          </div>
-          <div class="divider" style="margin:.1rem 0;"></div>
-          <div>
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;
-                        text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem;">Response Time</div>
-            <div>3&ndash;5 business days</div>
-          </div>
+
+          {% if success %}
+            <div class="alert alert-success">
+              <span class="alert-icon">&#10003;</span>
+              <div>Your message has been submitted. The Registrar&rsquo;s Office will respond within 3&ndash;5 business days.</div>
+            </div>
+          {% endif %}
+          {% if form.errors %}
+            <div class="alert alert-error">
+              <span class="alert-icon">&#10007;</span>
+              <div>
+                {% for f in form %}
+                  {% for e in f.errors %}
+                    {{ e }}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          <form method="POST" action="{% url 'contact' %}">
+            {% csrf_token %}
+            <div class="form-row form-row-2">
+              <div class="form-group">
+                <label for="id_name">Full Name <span style="color:var(--red);">*</span></label>
+                {{ form.name }}
+              </div>
+              <div class="form-group">
+                <label for="id_email">Email Address</label>
+                {{ form.email }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="id_subject">Subject / Concern</label>
+              {{ form.subject }}
+            </div>
+            <div class="form-group">
+              <label for="id_message">Message <span style="color:var(--red);">*</span></label>
+              {{ form.message }}
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Submit Message</button>
+          </form>
         </div>
       </div>
 
-      <div class="card" style="margin-top:1.2rem;border-top:3px solid var(--sky);">
-        <h3 style="margin-bottom:.7rem;">Grading Concerns?</h3>
-        <p style="font-size:.83rem;color:var(--text-mid);line-height:1.6;">
-          If you believe there is a discrepancy in your grades, submit a formal grade inquiry
-          within 5 days of the grade release date. Include your subject code and instructor&rsquo;s name.
-        </p>
+      <!-- Sidebar -->
+      <div class="fade-up-3">
+        <div class="card">
+          <h3 style="margin-bottom:1.2rem;">Registrar&rsquo;s Office</h3>
+          <div style="display:flex;flex-direction:column;gap:.9rem;font-size:.87rem;">
+            <div>
+              <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;
+                        text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem;">Address</div>
+              <div>
+                Leon Kilat St., Cebu City<br />Philippines 6000
+              </div>
+            </div>
+            <div class="divider" style="margin:.1rem 0;"></div>
+            <div>
+              <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;
+                        text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem;">Email</div>
+              <div>registrar@cec.edu.ph</div>
+            </div>
+            <div class="divider" style="margin:.1rem 0;"></div>
+            <div>
+              <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;
+                        text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem;">Office Hours</div>
+              <div>
+                Mon&ndash;Fri: 8:00 AM &ndash; 5:00 PM<br />Sat: 8:00 AM &ndash; 12:00 PM
+              </div>
+            </div>
+            <div class="divider" style="margin:.1rem 0;"></div>
+            <div>
+              <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;
+                        text-transform:uppercase;color:var(--text-light);margin-bottom:.3rem;">Response Time</div>
+              <div>3&ndash;5 business days</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:1.2rem;border-top:3px solid var(--sky);">
+          <h3 style="margin-bottom:.7rem;">Grading Concerns?</h3>
+          <p style="font-size:.83rem;color:var(--text-mid);line-height:1.6;">If you believe there is a discrepancy in your grades, submit a formal grade inquiry within 5 days of the grade release date. Include your subject code and instructor&rsquo;s name.</p>
+        </div>
       </div>
     </div>
-
   </div>
-</div>
 {% endblock %}
