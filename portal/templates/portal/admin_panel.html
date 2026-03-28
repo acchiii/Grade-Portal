@@ -21,7 +21,7 @@
         <p style="color:rgba(255,255,255,.5);font-size:.83rem;">Cebu Eastern College &mdash; Leon Kilat St., Cebu City, Philippines 6000</p>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:.3rem;">A.Y. 2026&ndash;2027 &middot; 1st Semester</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:.3rem;">A.Y. 2026&ndash;2027 &middot;</div>
       </div>
     </div>
 
@@ -65,9 +65,9 @@
         <a href="{% url 'admin_subjects' %}" class="btn btn-outline" style="margin-top:0.5rem;">View Subjects</a>
       </div>
       <div class="card">
-        <h3>System Overview</h3>
-        <p>View system statistics and reports.</p>
-        <a href="#" class="btn btn-primary">View Reports</a>
+        <h3>Feedbacks</h3>
+        <p>View system feedbacks.</p>
+        <a href="#allfeedback" class="btn btn-primary">View</a>
       </div>
     </div>
 
@@ -192,7 +192,7 @@
           </div>
         </div>
       {% else %}
-        <div class="grade-table-wrap">
+        <div class="grade-table-wrap" id="feedb">
           <table class="grade-table">
             <thead>
               <tr>
