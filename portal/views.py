@@ -121,10 +121,21 @@ def section_view(request, section_name, subject_code, semester, school_yr):
         )
     )
 
-    
-    if request.method == "POST":
-        for student in students:
-            grade, created = Grade.objects.get_or_create(
+    # Ensure grades have section_id set (GET) - safe update only if missing
+    for student in students:
+        grades = Grade.objects.filter(
+            student=student,
+            subject=section.subject,
+            semester=section.semester,
+            school_yr=section.school_yr
+        )
+        if grades.exists():
+            grade = grades.first()
+            if not grade.section_id:
+                grade.section = section
+                grade.save()
+        else:
+            grade = Grade.objects.create(
                 student=student,
                 subject=section.subject,
                 section=section,
@@ -132,19 +143,63 @@ def section_view(request, section_name, subject_code, semester, school_yr):
                 school_yr=section.school_yr
             )
 
-            grade.prelim = request.POST.get(f'prelim_{student.id}') or grade.prelim
-            grade.midterm = request.POST.get(f'midterm_{student.id}') or grade.midterm
-            grade.semi = request.POST.get(f'semi_{student.id}') or grade.semi
-            grade.final = request.POST.get(f'final_{student.id}') or grade.final
+    if request.method == "POST":
+        save_count = 0
+        error_count = 0
+        for student in students:
             try:
-                    grade.save()
-                    messages.success(request, "Saved!")
-            except Exception as e:
-                    messages.error(request, str(e))
-                        
-            return redirect('section_view', section.section_name, subject_code, semester, school_yr)
+                grade = Grade.objects.get(
+                    student=student,
+                    subject=section.subject,
+                    semester=section.semester,
+                    school_yr=section.school_yr
+                )
+                updated = False
+                prelim_val = request.POST.get(f'prelim_{student.id}')
+                if prelim_val is not None:
+                    grade.prelim = float(prelim_val) if prelim_val.strip() else None
+                    updated = True
+                midterm_val = request.POST.get(f'midterm_{student.id}')
+                if midterm_val is not None:
+                    grade.midterm = float(midterm_val) if midterm_val.strip() else None
+                    updated = True
+                semi_val = request.POST.get(f'semi_{student.id}')
+                if semi_val is not None:
+                    grade.semi = float(semi_val) if semi_val.strip() else None
+                    updated = True
+                final_val = request.POST.get(f'final_{student.id}')
+                if final_val is not None:
+                    grade.final = float(final_val) if final_val.strip() else None
+                    updated = True
 
-      
+                remarks_val = request.POST.get(f'remarks_{student.id}')
+                if remarks_val is not None:
+                    grade.remarks = remarks_val if remarks_val.strip() else ''
+                    updated = True
+
+                if updated:
+                    # Auto-update remarks based on final grade if not manually set or empty
+                    if not grade.remarks and grade.final is not None:
+                        grade.remarks = 'PASSED' if grade.final <= 3.0 else 'FAILED'
+
+                    grade.save()
+                    # Update section reference if needed
+                    grade.section = section
+                    grade.save()
+                save_count += 1
+            except Exception as e:
+                error_count += 1
+                messages.error(request, f"Error saving for {student}: {str(e)}")
+
+        if error_count == 0:
+            messages.success(request, f"Successfully saved grades for {save_count} students!")
+        elif save_count > 0:
+            messages.warning(request, f"Saved {save_count} students, {error_count} errors.")
+        else:
+            messages.error(request, f"Failed to save grades: {error_count} errors.")
+
+        return redirect('section_view', section_name, subject_code, semester, school_yr)
+
     return render(request, 'portal/teacher_section_view.html', {
     'section': section,
     'students': students,
