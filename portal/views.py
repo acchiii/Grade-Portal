@@ -477,39 +477,65 @@ def register_view(request):
 @login_required
 def grades_view(request):
     student = request.user
-    rows    = (Grade.objects
-               .filter(student=student)
-               .select_related('subject')
-               .order_by('-school_yr', 'semester', 'subject__code'))
+    semester_filter = request.GET.get('semester', '')
+    
+    base_query = Grade.objects.filter(student=student).select_related('subject')
+    
+    if semester_filter:
+        base_query = base_query.filter(semester=semester_filter)
+    
+    rows = base_query.order_by('-school_yr', 'semester', 'subject__code')
 
-  
-    total_units, weighted_sum = 0, 0.0
+    # Group by semester only (separate 1st/2nd sem different years)
+    semester_groups = {}
     for r in rows:
-        if r.final is not None and r.remarks == 'PASSED':
-            total_units  += r.subject.units
-            weighted_sum += r.final * r.subject.units
+        key = r.semester
+        if key not in semester_groups:
+            semester_groups[key] = []
+        semester_groups[key].append(r)
+    
+    # Prepare grade_rows per semester
+    all_grade_rows = []
+    total_units, weighted_sum = 0, 0.0
+    for semester, semester_rows in semester_groups.items():
+        semester_grade_rows = []
+        semester_units = 0
+        semester_weighted = 0.0
+        for r in semester_rows:
+            rem = r.remarks or ''
+            if rem == 'PASSED':   pill, gcls = 'pill-pass', 'grade-pass'
+            elif rem == 'FAILED': pill, gcls = 'pill-fail', 'grade-fail'
+            elif rem == 'INC':    pill, gcls = 'pill-inc',  'grade-inc'
+            else:                 pill, gcls = '',           ''
+            row_data = {'grade': r, 'pill': pill, 'gcls': gcls, 'rem': rem or 'PENDING'}
+            semester_grade_rows.append(row_data)
+            if r.final is not None and r.remarks == 'PASSED':
+                semester_units += r.subject.units
+                semester_weighted += r.final * r.subject.units
+                total_units += r.subject.units
+                weighted_sum += r.final * r.subject.units
+        all_grade_rows.append({
+            'semester': semester,
+            'rows': semester_grade_rows,
+            'gwa': round(semester_weighted / semester_units, 2) if semester_units > 0 else None
+        })
+    
     gwa = round(weighted_sum / total_units, 2) if total_units > 0 else None
 
- 
-    grade_rows = []
-    for r in rows:
-        rem = r.remarks or ''
-        if rem == 'PASSED':   pill, gcls = 'pill-pass', 'grade-pass'
-        elif rem == 'FAILED': pill, gcls = 'pill-fail', 'grade-fail'
-        elif rem == 'INC':    pill, gcls = 'pill-inc',  'grade-inc'
-        else:                 pill, gcls = '',           ''
-        grade_rows.append({'grade': r, 'pill': pill, 'gcls': gcls, 'rem': rem or 'PENDING'})
+    semesters = sorted(set(Grade.objects.filter(student=student).values_list('semester', flat=True)))
 
     return render(request, 'portal/grades.html', {
         'current':     'grades',
         'student':     student,
-        'grade_rows':  grade_rows,
-        'row_count':   len(grade_rows),
+        'grade_rows':  all_grade_rows,
+        'row_count':   sum(len(group['rows']) for group in all_grade_rows),
         'total_units': total_units,
         'gwa':         gwa,
         'gwa_fmt':     f'{gwa:.2f}' if gwa else '—',
         'standing':    get_standing(gwa),
         'stand_color': standing_color(gwa),
+        'semesters':   semesters,
+        'semester_filter': semester_filter,
     })
 
 
