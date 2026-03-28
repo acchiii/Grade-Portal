@@ -121,7 +121,7 @@ def section_view(request, section_name, subject_code, semester, school_yr):
         )
     )
 
-    # Ensure grades have section_id set (GET) - safe update only if missing
+
     for student in students:
         grades = Grade.objects.filter(
             student=student,
@@ -178,12 +178,12 @@ def section_view(request, section_name, subject_code, semester, school_yr):
                     updated = True
 
                 if updated:
-                    # Auto-update remarks based on final grade if not manually set or empty
+                   
                     if not grade.remarks and grade.final is not None:
                         grade.remarks = 'PASSED' if grade.final <= 3.0 else 'FAILED'
 
                     grade.save()
-                    # Update section reference if needed
+                    
                     grade.section = section
                     grade.save()
                 save_count += 1
