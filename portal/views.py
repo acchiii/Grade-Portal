@@ -29,7 +29,7 @@ def index(request):
     return render(request, 'portal/index.html', {
         'current':       'index',
         'grading_scale': [],
-        'hero_pills':    [],
+        
     })
 
 def admin_login(request):
@@ -325,13 +325,15 @@ def teacher_login(request):
         password = request.POST.get('password')
         try:
             teacher = Teacher.objects.get(teacher_id=teacher_id)
-            if teacher.check_password(password): 
+            if teacher.check_password(password):
+                # request.session.flush() 
                 request.session['teacher_id'] = teacher.id
                 return redirect('teacher')
             else:
                 error_message = 'Invalid credentials'
         except Teacher.DoesNotExist:
             error_message = 'Teacher not found'
+            
     return render(request, 'portal/teacher_login.html', {
         'error_message': error_message if 'error_message' in locals() else None
     })

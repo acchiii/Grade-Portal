@@ -127,8 +127,6 @@ class Teacher(models.Model):
     department = models.CharField(max_length=100, blank=True)
     subjects   = models.ManyToManyField(Subject, blank=True)
 
-    
-
     def set_password(self, raw_password):
         self.password = make_password(raw_password)
     
