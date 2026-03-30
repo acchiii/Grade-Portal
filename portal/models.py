@@ -1,7 +1,34 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
+from datetime import datetime
 
+def current_school_year():
+    year = datetime.now().year
+    return f"{year} - {year+1}"
+
+class Semester(models.Model):
+    semester = models.CharField(max_length=10, choices=[('1st', '1st Semester'), ('2nd', '2nd Semester')], default='1st')
+    
+    def update_semester(self, new_semester):
+        self.semester = new_semester
+        self.save()
+        
+    def get_semester(self):
+        return self.semester
+
+class SchoolYear(models.Model):
+    sy = models.CharField(max_length=20, default=current_school_year, unique=True)
+    
+    def update_sy(self, new_sy):
+        self.sy = new_sy
+        self.save()
+    
+    def get_sy(self):
+        return self.sy  
+    
+    def __str__(self):
+        return self.sy
 
 class StudentManager(BaseUserManager):
     def create_user(self, student_no, password=None, **extra_fields):
@@ -92,7 +119,9 @@ class Grade(models.Model):
     section   = models.ForeignKey('ClassSection', on_delete=models.CASCADE)
 
     semester  = models.CharField(max_length=10, choices=SEMESTER_CHOICES, default='1st')
-    school_yr = models.CharField(max_length=20, default='2026-2027')
+    defsy = current_school_year()
+    school_yr = models.CharField(max_length=20, default=defsy)
+    
 
     prelim  = models.FloatField(null=True, blank=True)
     midterm = models.FloatField(null=True, blank=True)
@@ -155,7 +184,7 @@ class ClassSection(models.Model):
     
     section_name = models.CharField(max_length=50)
     semester = models.CharField(max_length=10, choices=SEMESTER_CHOICES, default='1st')
-    school_yr = models.CharField(max_length=20, default='2026-2027')
+    school_yr = models.CharField(max_length=20, default=SchoolYear.get_sy())
     students = models.ManyToManyField(Student, blank=True)
    
     class Meta:

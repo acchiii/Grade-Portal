@@ -89,7 +89,7 @@
         {% if request.user.is_authenticated %}
           Logged in as: <strong style="color:rgba(255,255,255,.85);">{{ request.user.first_name }} {{ request.user.last_name }}</strong>
         {% else %}
-          Academic Year 2026&ndash;2027 &middot; 1st Semester
+          Academic Year {{ sy }} &middot; {{ semester }} Semester
         {% endif %}
       </span>
     </div>
@@ -343,9 +343,9 @@
       </div>
       <div style="text-align:center;">
         <div>
-          &copy;{% now 'Y' %}Cebu Eastern College. All rights reserved.
+          &copy;{% now 'Y' %} Cebu Eastern College. All rights reserved.
         </div>
-        <div style="margin-top:.2rem;">Student Grade Portal &mdash; A.Y. 2026&ndash;2027</div>
+        <div style="margin-top:.2rem;">Student Grade Portal &mdash; A.Y. {{ sy }}</div>
       </div>
     </footer>
   </body>

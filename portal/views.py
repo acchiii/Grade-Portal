@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Student, Grade, Feedback, Teacher, Admin, Subject, ClassSection, COURSE_CHOICES
+from .models import Student, Grade, Feedback, Teacher, Admin, Subject, ClassSection, SchoolYear, Semester, COURSE_CHOICES, current_school_year
 from .forms  import LoginForm, RegisterForm, FeedbackForm, TeacherForm, GradeForm, SubjectForm, ClassSectionForm
 from django.db.models import Prefetch
 from django.contrib.auth import login, logout
@@ -28,6 +28,8 @@ def standing_color(gwa):
 def index(request):
     return render(request, 'portal/index.html', {
         'current':       'index',
+        'sy': SchoolYear.objects.first().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.first().get_semester() if Semester.objects.exists() else '1st',
         'grading_scale': [],
         
     })
