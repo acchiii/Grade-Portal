@@ -4,7 +4,7 @@ from portal import views
 from django.conf.urls import handler500, handler404
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin-portal/', admin.site.urls),
     path('', include('portal.urls')),
 ]
 

@@ -5,9 +5,9 @@
 /* VARIABLE DEFINITIONS */
 html[data-theme="light"],
 :root {
-    --primary: #79aec8;
-    --secondary: #417690;
-    --accent: #f5dd5d;
+    --primary: #1976d2;
+    --secondary: #2e79e3;
+    --accent: #fff;
     --primary-fg: #fff;
 
     --body-fg: #333;
@@ -227,6 +227,7 @@ dd {
 form {
     margin: 0;
     padding: 0;
+    border-radius: 15px;
 }
 
 fieldset {
@@ -514,7 +515,7 @@ input:not([type]), input[type=text], input[type=password], input[type=email],
 input[type=url], input[type=number], input[type=tel], textarea, select,
 .vTextField {
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 10px;
     padding: 5px 6px;
     margin-top: 0;
     color: var(--body-fg);
@@ -536,7 +537,7 @@ select {
 }
 
 select[multiple] {
-    /* Allow HTML size attribute to override the height in the rule above. */
+    
     height: auto;
     min-height: 150px;
 }
@@ -547,7 +548,7 @@ select[multiple] {
     background: var(--button-bg);
     padding: 10px 15px;
     border: none;
-    border-radius: 4px;
+    border-radius: 10px;
     color: var(--button-fg);
     cursor: pointer;
     transition: background 0.15s;
@@ -619,6 +620,8 @@ input[type=button][disabled].default {
     text-align: left;
     background: var(--header-bg);
     color: var(--header-link-color);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 }
 
 .module caption,
@@ -889,6 +892,8 @@ a.deletelink:focus, a.deletelink:hover {
     display: flex;
     flex-direction: column;
     height: 100%;
+    box-shadow: 0 9px 9px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
 }
 
 #container > .main {
@@ -932,6 +937,7 @@ a.deletelink:focus, a.deletelink:hover {
     float: right;
     width: 260px;
     position: relative;
+    border-radius: 10px;
     margin-right: -300px;
 }
 
@@ -949,6 +955,8 @@ a.deletelink:focus, a.deletelink:hover {
 
 .colSM {
     margin-left: 300px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
 }
 
 .colSM #content-related {
@@ -976,6 +984,8 @@ a.deletelink:focus, a.deletelink:hover {
     padding: 10px 40px;
     background: var(--header-bg);
     color: var(--header-color);
+    /* border-top-left-radius: 15px;
+    border-top-right-radius: 15px; */
 }
 
 #header a:link, #header a:visited, #logout-form button {
@@ -1000,8 +1010,8 @@ a.deletelink:focus, a.deletelink:hover {
     padding: 0;
     margin: 0;
     margin-inline-end: 20px;
-    font-weight: 300;
-    font-size: 1.5rem;
+    font-weight: 600;
+    font-size: 1.3rem;
     color: var(--header-branding-color);
 }
 
