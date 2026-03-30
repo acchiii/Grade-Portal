@@ -28,8 +28,8 @@ def standing_color(gwa):
 def index(request):
     return render(request, 'portal/index.html', {
         'current':       'index',
-        'sy': SchoolYear.objects.first().get_sy() if SchoolYear.objects.exists() else current_school_year(),
-        'semester': Semester.objects.first().get_semester() if Semester.objects.exists() else '1st',
+        'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
         'grading_scale': [],
         
     })
@@ -82,6 +82,9 @@ def admin_panel(request):
         'students':   students,
         'feedback':   feedback,
         'grade_rows': grade_rows,
+        'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
+
     })
 
 
@@ -196,6 +199,9 @@ def section_view(request, section_name, subject_code, semester, school_yr):
     return render(request, 'portal/teacher_section_view.html', {
     'section': section,
     'students': students,
+    'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+    'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
+
 })
 
 def add_student_to_section(request, section_id):
@@ -317,6 +323,9 @@ def teacher_view(request):
         'sections': sections,
         'subjects': subjects,
         'subject_grades': subject_grades,
+        'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
+
     })
 
 
@@ -337,7 +346,10 @@ def teacher_login(request):
             error_message = 'Teacher not found'
             
     return render(request, 'portal/teacher_login.html', {
-        'error_message': error_message if 'error_message' in locals() else None
+        'error_message': error_message if 'error_message' in locals() else None,
+        'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
+
     })
 
 def admin_add_teacher(request):
@@ -531,6 +543,9 @@ def grades_view(request):
         'stand_color': standing_color(gwa),
         'semesters':   semesters,
         'semester_filter': semester_filter,
+        'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
+
     })
 
 
@@ -557,6 +572,9 @@ def profile_view(request, pk):
         'profile': profile,
         'is_own':  is_own,
         'fields':  fields,
+        'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
+
     })
 
 
@@ -568,7 +586,12 @@ def contact_view(request):
         success = True
         form = FeedbackForm()   # reset
     return render(request, 'portal/contact.html', {
-        'form': form, 'success': success, 'current': 'contact'
+        'form': form, 
+        'success': success, 
+        'current': 'contact',
+        'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
+
     })
 
 

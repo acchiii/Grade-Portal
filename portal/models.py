@@ -5,11 +5,19 @@ from datetime import datetime
 
 def current_school_year():
     year = datetime.now().year
-    return f"{year} - {year+1}"
+    return f"{year}-{year+1}"
 
 class Semester(models.Model):
-    semester = models.CharField(max_length=10, choices=[('1st', '1st Semester'), ('2nd', '2nd Semester')], default='1st')
-    
+    SEM_CHOICES = [
+        ('1st', '1st Semester'),
+        ('2nd', '2nd Semester'),
+    ]
+
+    semester = models.CharField(
+        max_length=5,
+        choices=SEM_CHOICES,
+        default='1st'
+    ) 
     def update_semester(self, new_semester):
         self.semester = new_semester
         self.save()
@@ -18,7 +26,11 @@ class Semester(models.Model):
         return self.semester
 
 class SchoolYear(models.Model):
-    sy = models.CharField(max_length=20, default=current_school_year, unique=True)
+    sy = models.CharField(
+        max_length=20,
+        default=current_school_year,
+        unique=True
+    )
     
     def update_sy(self, new_sy):
         self.sy = new_sy
@@ -119,8 +131,8 @@ class Grade(models.Model):
     section   = models.ForeignKey('ClassSection', on_delete=models.CASCADE)
 
     semester  = models.CharField(max_length=10, choices=SEMESTER_CHOICES, default='1st')
-    defsy = current_school_year()
-    school_yr = models.CharField(max_length=20, default=defsy)
+    defsy = SchoolYear()
+    school_yr = models.CharField(max_length=20, default=defsy.get_sy())
     
 
     prelim  = models.FloatField(null=True, blank=True)
@@ -184,7 +196,8 @@ class ClassSection(models.Model):
     
     section_name = models.CharField(max_length=50)
     semester = models.CharField(max_length=10, choices=SEMESTER_CHOICES, default='1st')
-    school_yr = models.CharField(max_length=20, default=SchoolYear.get_sy())
+    sy = SchoolYear()
+    school_yr = models.CharField(max_length=20, default=sy.get_sy())
     students = models.ManyToManyField(Student, blank=True)
    
     class Meta:
