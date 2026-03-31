@@ -603,8 +603,10 @@ def error404(request, exception=None):
 def error500(request):
     return render(request, 'portal/500.html')
 
-def error403(request):
-    return render(request, 'portal/403.html')
+def error403(request, exception):
+    return render(request, 'portal/403.html', {
+        'err': str(exception),
+    })
 
 
 
