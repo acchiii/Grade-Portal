@@ -1,10 +1,11 @@
 from pathlib import Path
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-cec-grade-portal-change-in-production'
-DEBUG = False
-ALLOWED_HOSTS = ['*']
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=lambda v: [s.strip() for s in v.split(',')])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -16,6 +17,7 @@ INSTALLED_APPS = [
     'portal',
     'tailwind',
     'theme',
+    'decouple',
 ]
 
 MIDDLEWARE = [
@@ -52,7 +54,7 @@ WSGI_APPLICATION = 'GradePortal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'gradeportal.db',
+        'NAME': BASE_DIR / config('DATABASE_NAME'),
     }
 }
 
