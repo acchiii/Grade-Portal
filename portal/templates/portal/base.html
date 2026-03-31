@@ -269,46 +269,7 @@
         }
       }, 2000)
       
-      const frm = document.getElementById('frm')
-      
-      document.getElementById('adminbtn').addEventListener('click', function (event) {
-        event.preventDefault()
-      
-        frm.classList.toggle('active')
-        document.body.classList.toggle('modal-open')
-        if (frm.classList.contains('active')) {
-          document.body.style.overflow = 'hidden'
-        } else {
-          document.body.style.overflow = 'auto'
-        }
-      })
-      
-      document.getElementById('mobile-adminbtn').addEventListener('click', function (event) {
-        event.preventDefault()
-      
-        frm.classList.toggle('active')
-        document.body.classList.toggle('modal-open')
-        if (frm.classList.contains('active')) {
-          document.body.style.overflow = 'hidden'
-        } else {
-          document.body.style.overflow = 'auto'
-        }
-      })
-      
-      document.getElementById('frm').addEventListener('click', function (event) {
-        if (event.target === this) {
-          this.classList.remove('active')
-          document.body.classList.remove('modal-open')
-          document.body.style.overflow = 'auto'
-        }
-      })
-      
-      document.getElementById('closeBtn').addEventListener('click', function (event) {
-        frm.classList.remove('active')
-        document.body.classList.remove('modal-open')
-        document.body.style.overflow = 'auto'
-      })
-      
+      // Mobile menu JS - Always safe
       const mobileMenuBtn = document.getElementById('mobile-menu-btn')
       const mobileMenu = document.getElementById('mobile-menu')
       
@@ -317,6 +278,7 @@
           console.log('Hamburger clicked!')
           mobileMenuBtn.classList.toggle('active')
           mobileMenu.classList.toggle('active')
+          document.body.classList.toggle('mobile-menu-open')
           console.log('Menu active:', mobileMenu.classList.contains('active'))
         })
       
@@ -324,10 +286,53 @@
           if (e.target.tagName === 'A') {
             mobileMenuBtn.classList.remove('active')
             mobileMenu.classList.remove('active')
+            document.body.classList.remove('mobile-menu-open')
           }
         })
       } else {
-        console.log('Mobile menu elements not found:', mobileMenuBtn, mobileMenu)
+        console.log('Mobile menu elements not found')
+      }
+
+      // Admin modal JS - Null-safe
+      const frm = document.getElementById('frm')
+      const adminBtn = document.getElementById('adminbtn')
+      const mobileAdminBtn = document.getElementById('mobile-adminbtn')
+      const closeBtn = document.getElementById('closeBtn')
+      
+      if (frm) {
+        if (adminBtn) {
+          adminBtn.addEventListener('click', function (event) {
+            event.preventDefault()
+            frm.classList.toggle('active')
+            document.body.classList.toggle('modal-open')
+            document.body.style.overflow = frm.classList.contains('active') ? 'hidden' : 'auto'
+          })
+        }
+        
+        if (mobileAdminBtn) {
+          mobileAdminBtn.addEventListener('click', function (event) {
+            event.preventDefault()
+            frm.classList.toggle('active')
+            document.body.classList.toggle('modal-open')
+            document.body.style.overflow = frm.classList.contains('active') ? 'hidden' : 'auto'
+          })
+        }
+        
+        frm.addEventListener('click', function (event) {
+          if (event.target === this) {
+            frm.classList.remove('active')
+            document.body.classList.remove('modal-open')
+            document.body.style.overflow = 'auto'
+          }
+        })
+        
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function () {
+            frm.classList.remove('active')
+            document.body.classList.remove('modal-open')
+            document.body.style.overflow = 'auto'
+          })
+        }
       }
     </script>
 

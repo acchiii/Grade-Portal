@@ -226,12 +226,15 @@ text-decoration: none;
   background: rgba(198, 40, 40, 0) !important;
 }
 
-/* Hide navbar by default on all screens */
+/* Hide desktop nav on mobile, show hamburger */
 .navbar-nav {
-  display: none !important;
+  display: none;
 }
 
-/* Show navbar on large screens (1024px and up) */
+.mobile-menu-btn {
+  display: flex;
+}
+
 @media (min-width: 1024px) {
   .navbar-nav {
     display: flex !important;
@@ -239,11 +242,6 @@ text-decoration: none;
 
   .mobile-menu-btn {
     display: none !important;
-  }
-
-  .mobile-menu {
-    display: none !important;
-    background-color: transparent;
   }
 }
 
@@ -297,28 +295,27 @@ text-decoration: none;
 }
 
 /* Mobile Menu */
+/* Proper full-overlay mobile menu */
 .mobile-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 0.5rem;
-  width: 100%;
-  z-index: 1000;
-  transform: translateY(-10px);
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: var(--navy) !important;
+  z-index: 9999 !important;
+  display: none !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
 }
 
 .mobile-menu.active {
-  transform: translateY(0);
-  opacity: 1;
-  visibility: visible;
+  display: block !important;
+  transform: translateX(0) !important;
+}
+
+body.mobile-menu-open {
+  overflow: hidden;
 }
 
 .mobile-menu ul {
