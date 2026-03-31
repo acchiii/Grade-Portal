@@ -179,9 +179,10 @@
         </button>
 
         <!-- Mobile Menu -->
-        <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu md:hidden animate-fade-up" id="mobile-menu">
           <ul>
             <li>
+              <img src="{% static 'images/home.png' %}" alt="">
               <a href="{% url 'index' %}" class="{% if current == 'index' %}active{% endif %}">Home</a>
             </li>
 
@@ -190,24 +191,31 @@
                 <a href="{% url 'grades' %}" class="{% if current == 'grades' %}active{% endif %}">My Grades</a>
               </li>
               <li>
+                <img src="{% static 'images/profile.png' %}" alt="">
                 <a href="{% url 'profile' request.user.pk %}" class="{% if current == 'profile' %}active{% endif %}">Profile</a>
               </li>
             {% else %}
               <li>
+                <img src="{% static 'images/login.png' %}" alt="">
                 <a href="{% url 'login' %}" class="{% if current == 'login' %}active{% endif %}">Login</a>
               </li>
               <li>
+                <img src="{% static 'images/register.png' %}" alt="">
+
                 <a href="{% url 'register' %}" class="{% if current == 'register' %}active{% endif %}">Register</a>
               </li>
             {% endif %}
 
             <li>
+              <img src="{% static 'images/contact.png' %}" alt="">
               <a href="{% url 'contact' %}" class="{% if current == 'contact' %}active{% endif %}">Contact</a>
             </li>
             <li>
+              <img src="{% static 'images/teacher.png' %}" alt="">
               <a href="{% url 'teacher_login' %}" class="teacher-link">Teacher</a>
             </li>
             <li>
+              <img src="{% static 'images/admin.png' %}" alt="">
               <a href="{% url 'admin_login' %}" id="mobile-adminbtn" class="admin-link">Admin</a>
             </li>
 
@@ -215,6 +223,7 @@
               <li>
                 <div class="nav-user">
                   {% comment %} <div class="nav-avatar">{{ request.user.first_name|first|upper }}</div> {% endcomment %}
+                  <img src="{% static 'images/logout.png' %}" alt="">
                   <a href="{% url 'logout' %}" style="font-size:.75rem;padding:.4rem .9rem;background:rgba(255,255,255,0);
                         color:rgba(255,255,255,.7) !important;border-radius:6px;border:0px solid rgba(255,255,255,.15);">Logout</a>
                 </div>
@@ -229,7 +238,7 @@
       </div>
     </header>
 
-    <div class="card" id="frm">
+    <div class="card animate-fade-up" id="frm">
       <form action="{% url 'admin_login' %}" method="POST" class="adminform fade-up-4">
         {% csrf_token %}
         <div class="formcont">

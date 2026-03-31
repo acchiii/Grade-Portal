@@ -295,27 +295,39 @@ text-decoration: none;
 }
 
 /* Mobile Menu */
-/* Proper full-overlay mobile menu */
+/* Compact dropdown mobile menu - white bg below navbar */
 .mobile-menu {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  background: var(--navy) !important;
-  z-index: 9999 !important;
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  max-width: 320px !important;
+  max-height: 60vh !important;
+  max-width: 40vw !important;
+  background: var(--white) !important;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  z-index: 1000 !important;
   display: none !important;
-  transform: translateX(-100%) !important;
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  opacity: 0 !important;
+  transform: translateX(10px) translateY(-10px) !important;
+  transition: all 0.3s ease !important;
+  overflow-y: auto !important;
 }
 
 .mobile-menu.active {
   display: block !important;
-  transform: translateX(0) !important;
+  opacity: 1 !important;
+  transform: translateX(0) translateY(0) !important;
+}
+
+.mobile-menu ul {
+  padding: 1rem 0 !important;
+  margin: 0 !important;
 }
 
 body.mobile-menu-open {
-  overflow: hidden;
+  overflow: visible; /* Allow scroll, no full block */
 }
 
 .mobile-menu ul {
@@ -331,7 +343,7 @@ body.mobile-menu-open {
 .mobile-menu a {
   display: block;
   padding: 0.5rem 0.75rem;
-  color: #2e79e3;
+  color: black !important;
   text-decoration: none;
   border-radius: 4px;
   transition: background-color 0.3s;
@@ -339,15 +351,17 @@ body.mobile-menu-open {
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.06em;
+  text-decoration: none;
 }
 
 .mobile-menu a:hover {
-  background: rgba(46, 121, 227, 0.1);
+  background: rgba(53, 137, 255, 0.4);
 }
 
 .mobile-menu a.active {
   background: rgba(46, 121, 227, 0.1);
   color: #1a3494;
+  text-decoration: none;
 }
 
 .nav-user {
