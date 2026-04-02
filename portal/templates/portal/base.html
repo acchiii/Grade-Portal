@@ -54,6 +54,11 @@
         z-index: 50;
       }
       
+      .stat-card:hover, .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        
+      }
       .navbar-nav {
         position: sticky;
         top: 0;
@@ -80,7 +85,30 @@
       #tbll input {
         border: 1px solid rgba(0, 0, 0, 0.15);
       }
-    </style>
+      
+    .animate-fade-up {
+      animation: fadeUp 0.6s ease-out both;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.6s ease-out both;
+    }
+     .animate-from-left {
+      animation: fLeft 0.6s ease-in-out both;
+    }
+    @keyframes fLeft {
+      0% { opacity: 0; transform: translateX(-100px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(24px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  
+  </style>
   </head>
   <body>
     <div class="topbar">
@@ -302,7 +330,7 @@
         console.log('Mobile menu elements not found')
       }
 
-      // Admin modal JS - Null-safe
+      
       const frm = document.getElementById('frm')
       const adminBtn = document.getElementById('adminbtn')
       const mobileAdminBtn = document.getElementById('mobile-adminbtn')
