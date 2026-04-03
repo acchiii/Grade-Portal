@@ -131,8 +131,7 @@ class Grade(models.Model):
     section   = models.ForeignKey('ClassSection', on_delete=models.CASCADE)
 
     semester  = models.CharField(max_length=10, choices=SEMESTER_CHOICES, default='1st')
-    defsy = SchoolYear()
-    school_yr = models.CharField(max_length=20, default=defsy.get_sy())
+    school_yr = models.CharField(max_length=20, default=current_school_year)
     
 
     prelim  = models.FloatField(null=True, blank=True)
@@ -196,9 +195,9 @@ class ClassSection(models.Model):
     
     section_name = models.CharField(max_length=50)
     semester = models.CharField(max_length=10, choices=SEMESTER_CHOICES, default='1st')
-    sy = SchoolYear()
-    school_yr = models.CharField(max_length=20, default=sy.get_sy())
+    school_yr = models.CharField(max_length=20, default=current_school_year)
     students = models.ManyToManyField(Student, blank=True)
+   
    
     class Meta:
         unique_together = ['teacher', 'subject', 'section_name', 'semester', 'school_yr']

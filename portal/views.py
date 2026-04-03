@@ -223,14 +223,17 @@ def add_student_to_section(request, section_id):
         # Add student to section
         section.students.add(student)
 
-        # Create grade if not exists
-        Grade.objects.get_or_create(
+        # Create grade if not exists (match unique_together)
+        grade, created = Grade.objects.get_or_create(
             student=student,
             subject=section.subject,
-            section=section,
             semester=section.semester,
-            school_yr=section.school_yr
+            school_yr=section.school_yr,
+            defaults={'section': section}
         )
+        if created:
+            grade.section = section
+            grade.save()
 
         return redirect('section_view', 
                         section.section_name,
@@ -267,14 +270,17 @@ def bulk_add_students(request, section_id):
             section.students.add(student)
             
 
-            # ensure grade exists
-            Grade.objects.get_or_create(
+# ensure grade exists (match unique_together: exclude section from lookup)
+            grade, created = Grade.objects.get_or_create(
                 student=student,
                 subject=section.subject,
-                section=section,
                 semester=section.semester,
-                school_yr=section.school_yr
+                school_yr=section.school_yr,
+                defaults={'section': section}
             )
+            if created:
+                grade.section = section
+                grade.save()
 
         return redirect('section_view',
                         section.section_name,
@@ -303,15 +309,15 @@ def bulk_add_students(request, section_id):
 #         school_yr=section.school_yr
 #     ).values_list('student_id', flat=True)
 # )
+    # Exclude students already in section OR having grade for this subject/sem/sy (per unique_together)
     students = Student.objects.exclude(
-    Q(id__in=section.students.values_list('id', flat=True)) |
-    Q(id__in=Grade.objects.filter(
-        subject=section.subject,
-        section=section,
-        semester=section.semester,
-        school_yr=section.school_yr
-    ).values_list('student_id', flat=True))
-)
+        Q(id__in=section.students.values_list('id', flat=True)) |
+        Q(id__in=Grade.objects.filter(
+            subject=section.subject,
+            semester=section.semester,
+            school_yr=section.school_yr
+        ).values_list('student_id', flat=True))
+    )
 
     return render(request, 'portal/bulk_add_students.html', {
         'section': section,
