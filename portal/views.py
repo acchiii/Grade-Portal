@@ -472,7 +472,11 @@ def teacher_create_section(request):
         if form.is_valid():
             section = form.save(commit=False)
             section.teacher = teacher
-            section.save()
+            try:
+                section.save()
+            except Exception as e:
+                messages.error(request, f"Error creating section: {str(e)}")
+                return render(request, 'portal/teacher_create_section.html', {'form': form, 'teacher': teacher, 'error': str(e)})
             form.save_m2m()  # Save many-to-many relationships
             return redirect('teacher')
     else:
@@ -641,14 +645,12 @@ def error403(request, exception):
     
 def section_remove_student(request, section_id, student_no):
     if request.method != 'POST':
-        return HttpResponse('Not Post.')
-        # return redirect('section_view', section_name='', subject_code='', semester='', school_yr='')  # or handle GET
+        return redirect('section_view', section_name='', subject_code='', semester='', school_yr='')  # or handle GET
 
     teacher_id = request.session.get('teacher_id')
     if not teacher_id:
         messages.error(request, 'Please login as teacher.')
-        return HttpResponse('Login as Teacher first.')
-        # return redirect('teacher_login')
+        return redirect('teacher_login')
 
     teacher = get_object_or_404(Teacher, id=teacher_id)
     section = get_object_or_404(ClassSection, id=section_id, teacher=teacher)
@@ -666,16 +668,32 @@ def section_remove_student(request, section_id, student_no):
         school_yr=section.school_yr
     ).delete()
 
-    # messages.success(request, f'Student {student} removed from section successfully. Grade record deleted ({deleted_count}).')
+    messages.success(request, f'Student {student} removed from section successfully. Grade record deleted ({deleted_count}).')
     
-    return HttpResponse('Student removed successfully.')
-    # return redirect('section_view',
-    #                 section.section_name,
-    #                 section.subject.code,
-    #                 section.semester,
-    #                 section.school_yr)
     
-
-
-
-
+    return redirect('section_view',
+                    section.section_name,
+                    section.subject.code,
+                    section.semester,
+                    section.school_yr)
+    
+def delete_section(request, section_id):
+    if request.method != 'POST':
+        return redirect('teacher')
+    
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        messages.error(request, 'Please login as teacher.')
+        return redirect('teacher_login')
+    
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+    section = get_object_or_404(ClassSection, id=section_id, teacher=teacher)
+    
+    section_name = section.section_name
+    subject = section.subject.title
+    # Cascade deletes grades via FK, clear students M2M
+    section.students.clear()
+    section.delete()
+    
+    messages.success(request, f'Section {section_name} ({subject}) deleted successfully.')
+    return redirect('teacher')

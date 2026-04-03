@@ -54,7 +54,7 @@
         z-index: 50;
       }
       
-      .stat-card:hover, .card:hover {
+      .stat-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         
@@ -78,7 +78,7 @@
         z-index: 20;
         transform: scaleY(20px);
       }
-      .mobile-menu a a {
+      .mobile-menu li a {
         background: white;
       }
       
@@ -216,10 +216,11 @@
 
             {% if request.user.is_authenticated %}
               <li>
+                <img src="{% static 'portal/images/grades.png' %}" alt="">
                 <a href="{% url 'grades' %}" class="{% if current == 'grades' %}active{% endif %}">My Grades</a>
               </li>
               <li>
-                <img src="{% static 'images/profile.png' %}" alt="">
+                <img src="{% static 'portal/images/profile2.png' %}" alt="">
                 <a href="{% url 'profile' request.user.pk %}" class="{% if current == 'profile' %}active{% endif %}">Profile</a>
               </li>
             {% else %}
@@ -249,12 +250,10 @@
 
             {% if request.user.is_authenticated or request.session.admin_id %}
               <li>
-                <div class="nav-user">
-                  {% comment %} <div class="nav-avatar">{{ request.user.first_name|first|upper }}</div> {% endcomment %}
+               
+                  
                   <img src="{% static 'portal/images/logout.png' %}" alt="">
-                  <a href="{% url 'logout' %}" style="font-size:.75rem;padding:.4rem .9rem;background:rgba(255,255,255,0);
-                        color:rgba(255,255,255,.7) !important;border-radius:6px;border:0px solid rgba(255,255,255,.15);">Logout</a>
-                </div>
+                  <a href="{% url 'logout' %}" class="{% if current == 'contact' %}active{% endif %}">Logout</a>     
               </li>
             {% else %}
               <li>

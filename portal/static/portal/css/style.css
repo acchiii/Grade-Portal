@@ -298,11 +298,11 @@ text-decoration: none;
 .mobile-menu {
   position: absolute !important;
   top: 100% !important;
-  right: 0 !important;
+  right: 2% !important;
   left: auto !important;
   /* max-width: 320px !important; */
   max-height: 65vh !important;
-  max-width: 40vw !important;
+  max-width: 50vw !important;
   background: var(--white) !important;
   border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
   box-shadow: var(--shadow-lg) !important;
@@ -312,6 +312,7 @@ text-decoration: none;
   transform: translateX(10px) translateY(-10px) !important;
   transition: all 0.3s ease !important;
   overflow-y: auto !important;
+  padding: 0 !important;
 }
 
 .mobile-menu.active {
@@ -344,7 +345,7 @@ body.mobile-menu-open {
 .mobile-menu img {
    width: 20px;
    height: 20px;
-   margin-left: 2.5rem;
+   margin-left: 2rem;
 }
 
 .mobile-menu a {
@@ -360,6 +361,7 @@ body.mobile-menu-open {
   letter-spacing: 0.06em;
   text-decoration: none;
   margin-left: 0;
+  padding-left: 0;
 }
 
 .mobile-menu a:hover {

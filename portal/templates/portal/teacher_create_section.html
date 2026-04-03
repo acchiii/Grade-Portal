@@ -17,6 +17,10 @@
       <div class="eyebrow">Teacher Panel</div>
       <h2>Create Class Section</h2>
       <p>Create a new section for one of your subjects.</p>
+      
+      {% if error %}
+      <p style="color: red">Section Already Exist</p>
+      {% endif %}
     </div>
 
     <div class="card fade-up-2">

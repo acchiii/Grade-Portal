@@ -86,7 +86,9 @@
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem;margin-top:.5rem;">
       <div class="card fade-up" style="border-top:3px solid var(--navy);">
-        <div style="font-size:2rem;margin-bottom:.8rem;">📋</div>
+        <div style="font-size:2rem;margin-bottom:.8rem;">
+          <img src="{% static 'portal/images/grades.png' %}" alt="">
+        </div>
         <h3 style="font-family:var(--serif);color:var(--navy);margin-bottom:.5rem;">View Grades</h3>
         <p style="color:var(--text-mid);font-size:.88rem;line-height:1.65;">Check your midterm and final grades for all enrolled subjects. Official grades released by the Registrar&rsquo;s Office.</p>
         <a href="{% if request.user.is_authenticated %}
@@ -104,14 +106,18 @@
         </a>
       </div>
       <div class="card fade-up-2" style="border-top:3px solid var(--sky);">
-        <div style="font-size:2rem;margin-bottom:.8rem;">🎓</div>
+        <div style="font-size:2rem;margin-bottom:.8rem;">
+          <img src="{% static 'portal/images/academic-records.png' %}" alt="">
+        </div>
         <h3 style="font-family:var(--serif);color:var(--navy);margin-bottom:.5rem;">Academic Records</h3>
         <p style="color:var(--text-mid);font-size:.88rem;line-height:1.65;">Track your academic standing, GWA, and completed units across all semesters of your program.</p>
         <a href="{% url 'register' %}" style="display:inline-flex;align-items:center;gap:.3rem;margin-top:1rem;
                 font-size:.82rem;font-weight:600;color:var(--sky-dim);">Create account &rarr;</a>
       </div>
       <div class="card fade-up-3" style="border-top:3px solid var(--navy-mid);">
-        <div style="font-size:2rem;margin-bottom:.8rem;">✉️</div>
+        <div style="font-size:2rem;margin-bottom:.8rem;">
+          <img src="{% static 'portal/images/contact.png' %}" alt="">
+        </div>
         <h3 style="font-family:var(--serif);color:var(--navy);margin-bottom:.5rem;">Contact Registrar</h3>
         <p style="color:var(--text-mid);font-size:.88rem;line-height:1.65;">Submit grade inquiries, transcript requests, and enrollment concerns to the Registrar&rsquo;s Office.</p>
         <a href="{% url 'contact' %}" style="display:inline-flex;align-items:center;gap:.3rem;margin-top:1rem;
