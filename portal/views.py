@@ -6,6 +6,7 @@ from .forms  import LoginForm, RegisterForm, FeedbackForm, TeacherForm, GradeFor
 from django.db.models import Prefetch
 from django.contrib.auth import login, logout
 from django.contrib import messages
+from django.db.models import Q
 
 
 
@@ -285,7 +286,31 @@ def bulk_add_students(request, section_id):
         id__in=section.students.values_list('id', flat=True)
     )
     
-    
+    from django.db.models import Q
+
+# # exclude already added students (M2M)
+# students = Student.objects.exclude(
+#     id__in=section.students.values_list('id', flat=True)
+# )
+
+# # exclude students who already have a grade for this subject/section/sem/SY
+# students = students.exclude(
+#     id__in=Grade.objects.filter(
+#         subject=section.subject,
+#         section=section,
+#         semester=section.semester,
+#         school_yr=section.school_yr
+#     ).values_list('student_id', flat=True)
+# )
+    students = Student.objects.exclude(
+    Q(id__in=section.students.values_list('id', flat=True)) |
+    Q(id__in=Grade.objects.filter(
+        subject=section.subject,
+        section=section,
+        semester=section.semester,
+        school_yr=section.school_yr
+    ).values_list('student_id', flat=True))
+)
 
     return render(request, 'portal/bulk_add_students.html', {
         'section': section,
