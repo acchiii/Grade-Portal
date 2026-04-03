@@ -801,6 +801,16 @@ body.mobile-menu-open {
   box-shadow: var(--shadow-sm);
 }
 
+.card-action {
+  margin-top: 30px;
+}
+
+.card-action a {
+  font-size: 1em;
+  font-weight: 300;
+  border-radius: 10px;
+}
+
 .card2 {
   background: var(--white);
   border: 1px solid var(--border-light);
@@ -1206,6 +1216,13 @@ option:last-child() {
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--text-light);
+  margin-bottom: .4rem;
+}
+.stat-label2 {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--text-mid);
   margin-bottom: .4rem;
 }
 

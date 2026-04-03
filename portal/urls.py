@@ -15,6 +15,7 @@ urlpatterns = [
     path('teacher-login/', views.teacher_login, name='teacher_login'),
     path('teacher/add-grade/', views.teacher_add_grade, name='teacher_add_grade'),
     path('teacher/create-section/', views.teacher_create_section, name='teacher_create_section'),
+path('teacher/section/remove/<int:section_id>/<str:student_no>', views.section_remove_student, name='removestudent'),
     path('section/<int:section_id>/bulk-add-students/', views.bulk_add_students, name='bulk_add_students'),
     path('section/<int:section_id>/add-student/', views.add_student_to_section, name='add_student_to_section'),
     path('section/<str:section_name>/<str:subject_code>/<str:semester>/<str:school_yr>/', views.section_view,name='section_view'),

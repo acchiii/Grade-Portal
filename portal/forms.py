@@ -151,11 +151,11 @@ class GradeForm(forms.ModelForm):
 class ClassSectionForm(forms.ModelForm):
     class Meta:
         model = ClassSection
-        fields = ['subject', 'section_name', 'semester', 'school_yr', 'students']
+        fields = ['subject', 'section_name', 'semester', 'school_yr', 'students'] #students ang last
         widgets = {
             'subject': forms.Select(),
             'section_name': forms.TextInput(attrs={'placeholder': 'e.g. A, B, 1, 2'}),
             'semester': forms.Select(),
             'school_yr': forms.TextInput(attrs={'placeholder': 'e.g. 2026-2027'}),
-            'students': forms.SelectMultiple(),
+            'students': forms.TextInput(attrs={'placeholder': 'Select Manually Later', 'disabled':''}),
         }

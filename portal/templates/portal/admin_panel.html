@@ -32,11 +32,11 @@
           <div class="stat-value">{{ students|length }}</div>
         </div>
       </a>
-      <a href="#">
+      {% comment %} <a href="#">
         <div class="stat-card">
           <div class="stat-label">Grade Records</div>
           <div class="stat-value">{{ grade_rows|length }}</div>
-        </div>
+        </div> {% endcomment %}
       </a>
       <a href="#allfeedback">
         <div class="stat-card">
@@ -53,21 +53,27 @@
 
     <div class="grid grid-3 fade-up-3" style="margin-bottom:2rem;">
       <div class="card">
-        <h3>Teacher Management</h3>
-        <p>Add new teachers to the system.</p>
-        <a href="{% url 'admin_add_teacher' %}" class="btn btn-primary">Add Teacher</a>
-        <a href="{% url 'admin_teachers' %}" class="btn btn-outline" style="margin-top:0.5rem;">View Teachers</a>
+        <h3 class="eyebrow">Teacher Management</h3>
+        <p class="stat-label2">Add and view teachers.</p>
+        <div class="flex justify-end pt-8 items-end h-[80%]">
+          <a href="{% url 'admin_add_teacher' %}" style="font-size: 1em; font-weight: 600; border-radius: 15px; padding: 6px 18px; font-family: monospace; background-color: var(--sky); color: white;">Add</a>
+          <a href="{% url 'admin_teachers' %}" style="margin-top:0.5rem; margin-left: 0.5rem; font-size: 1em; font-weight: 600; border-radius: 15px; padding: 6px 18px; font-family: monospace; border: 1px solid rgba(0,0,0,0.2)">View</a>
+        </div>
       </div>
       <div class="card">
-        <h3>Subject Management</h3>
-        <p>Add new subjects and view all subjects.</p>
-        <a href="{% url 'admin_add_subject' %}" class="btn btn-primary">Add Subject</a>
-        <a href="{% url 'admin_subjects' %}" class="btn btn-outline" style="margin-top:0.5rem;">View Subjects</a>
+        <h3 class="eyebrow">Subject Management</h3>
+        <p class="stat-label2">Add new subjects and view all subjects.</p>
+        <div class="flex justify-end pt-8 items-end h-[80%]">
+          <a href="{% url 'admin_add_subject' %}" style="font-size: 1em; font-weight: 600; border-radius: 15px; padding: 6px 18px; font-family: monospace;  background-color: var(--sky); color: white;">Add</a>
+          <a href="{% url 'admin_subjects' %}" style="margin-top:0.5rem; margin-left: 0.5rem; font-size: 1em; font-weight: 600; border-radius: 15px; padding: 6px 18px; font-family: monospace; border: 1px solid rgba(0,0,0,0.2)">View</a>
+        </div>
       </div>
       <div class="card">
-        <h3>Feedbacks</h3>
-        <p>View system feedbacks.</p>
-        <a href="#allfeedback" class="btn btn-primary">View</a>
+        <h3 class="eyebrow">Feedbacks</h3>
+        <p class="stat-label2">View system feedbacks.</p>
+        <div class="card-action flex justify-end h-[80%]">
+          <a href="#allfeedback" style="font-size: 1em; font-weight: 600; border-radius: 15px; padding: 6px 18px; font-family: monospace; border: 1px solid rgba(0,0,0,0.0)">View</a>
+        </div>
       </div>
     </div>
 

@@ -636,7 +636,41 @@ def error403(request, exception):
     return render(request, 'portal/403.html', {
         'err': str(exception),
     })
+    
+    
+def section_remove_student(request, section_id, student_no):
+    if request.method != 'POST':
+        return redirect('section_view', section_name='', subject_code='', semester='', school_yr='')  # or handle GET
 
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        messages.error(request, 'Please login as teacher.')
+        return redirect('teacher_login')
+
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+    section = get_object_or_404(ClassSection, id=section_id, teacher=teacher)
+    student = get_object_or_404(Student, student_no=student_no)
+
+    # remove from M2M
+    removed = section.students.remove(student)
+    
+    # delete grade
+    deleted_count, _ = Grade.objects.filter(
+        student=student,
+        subject=section.subject,
+        section=section,
+        semester=section.semester,
+        school_yr=section.school_yr
+    ).delete()
+
+    messages.success(request, f'Student {student} removed from section successfully. Grade record deleted ({deleted_count}).')
+    
+    return redirect('section_view',
+                    section.section_name,
+                    section.subject.code,
+                    section.semester,
+                    section.school_yr)
+    
 
 
 
