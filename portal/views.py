@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -640,12 +641,14 @@ def error403(request, exception):
     
 def section_remove_student(request, section_id, student_no):
     if request.method != 'POST':
-        return redirect('section_view', section_name='', subject_code='', semester='', school_yr='')  # or handle GET
+        return HttpResponse('Not Post.')
+        # return redirect('section_view', section_name='', subject_code='', semester='', school_yr='')  # or handle GET
 
     teacher_id = request.session.get('teacher_id')
     if not teacher_id:
         messages.error(request, 'Please login as teacher.')
-        return redirect('teacher_login')
+        return HttpResponse('Login as Teacher first.')
+        # return redirect('teacher_login')
 
     teacher = get_object_or_404(Teacher, id=teacher_id)
     section = get_object_or_404(ClassSection, id=section_id, teacher=teacher)
@@ -663,13 +666,14 @@ def section_remove_student(request, section_id, student_no):
         school_yr=section.school_yr
     ).delete()
 
-    messages.success(request, f'Student {student} removed from section successfully. Grade record deleted ({deleted_count}).')
+    # messages.success(request, f'Student {student} removed from section successfully. Grade record deleted ({deleted_count}).')
     
-    return redirect('section_view',
-                    section.section_name,
-                    section.subject.code,
-                    section.semester,
-                    section.school_yr)
+    return HttpResponse('Student removed successfully.')
+    # return redirect('section_view',
+    #                 section.section_name,
+    #                 section.subject.code,
+    #                 section.semester,
+    #                 section.school_yr)
     
 
 

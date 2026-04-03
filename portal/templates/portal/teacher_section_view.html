@@ -54,8 +54,8 @@
               {% for student in students %}
                 {% with grade=student.section_grades.0 %}
                   <tr class="student-row">
-                    <td class="hidden idsearch">{{ student.student_no }}</td>
-                    <td  style="padding:1rem;">{{ student.last_name }}, {{ student.first_name }} <span class="text-xsm">({{ student.student_no }})</span></td>
+                    {% comment %} <td class="hidden idsearch">{{ student.student_no }}</td> {% endcomment %}
+                    <td  style="padding:1rem;">{{ student.last_name }}, {{ student.first_name }} <span class="text-xsm text-red-500">({{ student.student_no }})</span></td>
                     <td class="grade-val" style="padding:1rem .5rem; text-align:center;">
                       <input type="number" step="0.01" name="prelim_{{ student.id }}" value="{{ grade.prelim|default:'' }}" min="1" max="5" style="text-align:center; width:70px; padding:4px; border:1px solid var(--border); border-radius:4px;" />
                     </td>
