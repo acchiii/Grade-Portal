@@ -22,27 +22,31 @@
     <div class="card fade-up-2">
       {% comment %} <h2>Add Student to {{ section.section_name }}</h2> {% endcomment %}
 
-      <h2>Bulk Add Students</h2>
+     
 
       <form method="POST">
         {% csrf_token %}
 
-        <div style="margin-bottom:10px;">
-          <input type="text" id="search" placeholder="Search student..." onkeyup="filterList()" style="padding:8px; width:250px;" />
+        <div style="margin-bottom:10px; display: flex; align-items: center; justify-content: space-between;">
+           <h2 class="text-md eyebrow"><span>Bulk Add Students</span></h2>
+          <input type="text" id="search" placeholder="Search student..." onkeyup="filterList()" style="padding:8px; width:250px; border:1px solid var(--border); border-radius:10px;" />
         </div>
 
         <div id="studentList" style="max-height:300px; overflow:auto; border:1px solid #ccc; padding:10px;">
           {% for student in students %}
+          <div>
+
             <label class="student-item" style="display:block; margin:5px 0;">
               <input type="checkbox" name="students" value="{{ student.id }}" />
               {{ student.last_name }}, {{ student.first_name }} ({{ student.student_no }})
             </label>
+          </div>
           {% endfor %}
         </div>
 
         <br />
 
-        <button type="submit" style="padding:8px 12px;">Add Selected Students</button>
+        <button type="submit" style="padding:8px 12px; border:1px solid var(--border); border-radius:10px; background-color: var(--sky); color: white;">Add Selected Students</button>
       </form>
     </div>
   </div>

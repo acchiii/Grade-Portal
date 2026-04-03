@@ -17,20 +17,36 @@
       <p>Manage your subjects and student grades.</p>
     </div>
 
-    <div class="grid grid-3 fade-up-2">
-      <div class="card">
-        <h3 class="text-md mb-10px">
+    <div class="grid grid-cols-1 md:grid-cols-2 animate-from-left">
+      <div class="pl-8">
+        <h3 class="text-md mb-10px eyebrow"><span>Your Subjects</span></h3>
+        <ul>
+          <br />
+          {% for subject in subjects %}
+            <li>{{ subject.code }} — {{ subject.title }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <br>
+
+      <div class="card w-fit">
+        <h3 class="text-md mb-10px eyebrow">
           {% if sections|length > 0 %}
             Your Sections
           {% else %}
             No Section Available
           {% endif %}
         </h3>
-        <ul class="pl-2">
-          <br />
+        <ul class="pl-2 grid grid-cols-2 gap-7">
+          {% comment %} <br /> {% endcomment %}
           {% for section in sections %}
-            <li>
-              <a href="{% url 'section_view' section.section_name section.subject.code section.semester section.school_yr %}">{{ section.subject }} — {{ section.section_name }}</a>
+            <li style="margin: 10px;">
+              <a href="{% url 'section_view' section.section_name section.subject.code section.semester section.school_yr %}">
+                <div class="card" style="border-radius: 10px; border: 1px dashed rgba(0,0, 0, 0.4)">
+                  <h3 class="eyebrow">{{ section.subject }}</h3>
+                  <h4>{{ section.section_name }}</h4>
+                </div>
+              </a>
             </li>
           {% endfor %}
           <br />
@@ -39,16 +55,6 @@
         <div class="w-full h-fit flex justify-end items-end">
           <a href="{% url 'teacher_create_section' %}" class="btn btn-primary p-8" style="padding: 8px 16px; border-radius: 100%;">+</a>
         </div>
-      </div>
-
-      <div class="card">
-        <h3 class="text-md mb-10px">Your Subjects</h3>
-        <ul>
-          <br />
-          {% for subject in subjects %}
-            <li>{{ subject.code }} — {{ subject.title }}</li>
-          {% endfor %}
-        </ul>
       </div>
 
       {% comment %} <div class="card">

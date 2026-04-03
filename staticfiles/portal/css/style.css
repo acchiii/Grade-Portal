@@ -109,7 +109,7 @@ body {
   justify-content: space-between;
   height: 70px;
   position: relative;
-  /* For absolute positioning of mobile menu */
+  
 }
 
 .navbar-brand {
@@ -181,7 +181,7 @@ text-decoration: none;
   background: rgba(255, 255, 255, .1);
 }
 
-/* underline base */
+
 .navbar-nav a::after {
   content: '';
   position: absolute;
@@ -193,7 +193,7 @@ text-decoration: none;
   transition: width 0.3s ease;
 }
 
-/* animate */
+
 .navbar-nav a:hover::after {
   width: 100px;
 }
@@ -226,7 +226,7 @@ text-decoration: none;
   background: rgba(198, 40, 40, 0) !important;
 }
 
-/* Hide desktop nav on mobile, show hamburger */
+
 .navbar-nav {
   display: none;
 }
@@ -245,7 +245,7 @@ text-decoration: none;
   }
 }
 
-/* Mobile Menu Button */
+
 .mobile-menu-btn {
   display: flex;
   flex-direction: column;
@@ -278,7 +278,7 @@ text-decoration: none;
   transform: rotate(-45deg) translate(6px, -6px);
 }
 
-/* Mobile Menu Overlay */
+
 .mobile-menu-overlay {
   position: fixed;
   top: 0;
@@ -294,15 +294,14 @@ text-decoration: none;
   display: block;
 }
 
-/* Mobile Menu */
-/* Compact dropdown mobile menu - white bg below navbar */
+
 .mobile-menu {
   position: absolute !important;
   top: 100% !important;
   right: 0 !important;
   left: auto !important;
   max-width: 320px !important;
-  max-height: 60vh !important;
+  max-height: 65vh !important;
   max-width: 40vw !important;
   background: var(--white) !important;
   border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
@@ -760,7 +759,7 @@ body.mobile-menu-open {
   margin-bottom: 1.8rem;
 }
 
-.section-header .eyebrow {
+.section-header .eyebrow, .eyebrow {
   font-size: .68rem;
   font-weight: 700;
   letter-spacing: .18em;
@@ -802,6 +801,14 @@ body.mobile-menu-open {
   box-shadow: var(--shadow-sm);
 }
 
+.card2 {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
 .card-header {
   padding-bottom: 1.2rem;
   margin-bottom: 1.5rem;
@@ -831,9 +838,19 @@ body.mobile-menu-open {
 
 
 
+option:first-child() {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  border: 1px solid var(--sky);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, .4);
+}
 
-
-
+option:last-child() {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border: 1px solid var(--sky);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, .4);
+}
 
 
 

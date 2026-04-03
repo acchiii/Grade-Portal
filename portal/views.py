@@ -188,7 +188,7 @@ def section_view(request, section_name, subject_code, semester, school_yr):
                 messages.error(request, f"Error saving for {student}: {str(e)}")
 
         if error_count == 0:
-            messages.success(request, f"Successfully saved grades for {save_count} students!")
+            messages.success(request, f"Grades saved successfully!")
         elif save_count > 0:
             messages.warning(request, f"Saved {save_count} students, {error_count} errors.")
         else:
@@ -243,6 +243,7 @@ def add_student_to_section(request, section_id):
         'section': section,
         'students': students
     })
+    
 def bulk_add_students(request, section_id):
     teacher_id = request.session.get('teacher_id')
 
@@ -262,6 +263,7 @@ def bulk_add_students(request, section_id):
 
             # add to M2M safely
             section.students.add(student)
+            
 
             # ensure grade exists
             Grade.objects.get_or_create(
@@ -282,6 +284,8 @@ def bulk_add_students(request, section_id):
     students = Student.objects.exclude(
         id__in=section.students.values_list('id', flat=True)
     )
+    
+    
 
     return render(request, 'portal/bulk_add_students.html', {
         'section': section,

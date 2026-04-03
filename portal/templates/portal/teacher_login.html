@@ -29,11 +29,11 @@
         {% csrf_token %}
         <div class="form-group">
           <label for="id_teacher_id">Teacher ID</label>
-          <input type="text" name="teacher_id" id="id_teacher_id" class="form-control" required />
+          <input type="text" name="teacher_id" id="id_teacher_id" class="form-control" placeholder="ID Number" required />
         </div>
         <div class="form-group">
           <label for="id_password">Password</label>
-          <input type="password" name="password" id="id_password" class="form-control" required />
+          <input type="password" name="password" id="id_password" class="form-control" placeholder="Your Password" required />
         </div>
         <button type="submit" class="btn btn-primary btn-full">Sign In</button>
       </form>

@@ -759,7 +759,7 @@ body.mobile-menu-open {
   margin-bottom: 1.8rem;
 }
 
-.section-header .eyebrow {
+.section-header .eyebrow, .eyebrow {
   font-size: .68rem;
   font-weight: 700;
   letter-spacing: .18em;
@@ -801,6 +801,14 @@ body.mobile-menu-open {
   box-shadow: var(--shadow-sm);
 }
 
+.card2 {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
 .card-header {
   padding-bottom: 1.2rem;
   margin-bottom: 1.5rem;
@@ -830,9 +838,19 @@ body.mobile-menu-open {
 
 
 
+option:first-child() {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  border: 1px solid var(--sky);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, .4);
+}
 
-
-
+option:last-child() {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border: 1px solid var(--sky);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, .4);
+}
 
 
 
