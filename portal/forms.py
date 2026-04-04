@@ -29,10 +29,10 @@ class RegisterForm(forms.ModelForm):
         model  = Student
         fields = ['last_name', 'first_name', 'student_no', 'email', 'course', 'year_level']
         widgets = {
-            'last_name':  forms.TextInput(attrs={'placeholder': 'Belarmino'}),
-            'first_name': forms.TextInput(attrs={'placeholder': 'Archie'}),
-            'student_no': forms.TextInput(attrs={'placeholder': '2312100'}),
-            'email':      forms.TextInput(attrs={'placeholder': 'example@gmail.com'}),
+            'last_name':  forms.TextInput(attrs={'placeholder': 'Enter here...'}),
+            'first_name': forms.TextInput(attrs={'placeholder': 'Enter here...'}),
+            'student_no': forms.TextInput(attrs={'placeholder': 'e.g 2312100'}),
+            'email':      forms.TextInput(attrs={'placeholder': 'e.g rojen@gmail.com'}),
             'course':     forms.Select(),
             'year_level': forms.Select(),
         }
