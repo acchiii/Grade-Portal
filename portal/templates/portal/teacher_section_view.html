@@ -95,7 +95,7 @@
       {% if messages %}
         <div style="margin-top: 20px; padding: 10px; border-radius: 6px;">
           {% for message in messages %}
-            <p style="{% if message.tags == 'success' %}color: #16a34a; background: #dcfce7;{% elif message.tags == 'error' %}color: #dc2626; background: #fef2f2;{% elif message.tags == 'warning' %}color: #d97706; background: #fef3c7;{% endif %} padding: 8px; border-radius: 4px; margin: 5px 0;">{{ message }}</p>
+            {% comment %} <p style="{% if message.tags == 'success' %}color: #16a34a; background: #dcfce7;{% elif message.tags == 'error' %}color: #dc2626; background: #fef2f2;{% elif message.tags == 'warning' %}color: #d97706; background: #fef3c7;{% endif %} padding: 8px; border-radius: 4px; margin: 5px 0;">{{ message }}</p> {% endcomment %}
           {% endfor %}
         </div>
       {% endif %}

@@ -431,6 +431,24 @@ def admin_teachers(request):
         'course_choices': COURSE_CHOICES
     })
 
+def delete_teacher(request, teacher_id):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    if request.method != 'POST':
+        return redirect('admin_teachers')
+    
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+    teacher_name = teacher.name
+    teacher_id_str = teacher.teacher_id
+    
+    # Delete cascades ClassSections/Grades
+    teacher.delete()
+    
+    messages.success(request, f'Teacher "{teacher_name}" ({teacher_id_str}) deleted successfully. Related sections and grades removed.')
+    return redirect('admin_teachers')
+
 def admin_add_subject(request):
     admin_id = request.session.get('admin_id')
     if not admin_id:
@@ -463,6 +481,24 @@ def delete_subject(request, subject_id):
     
     messages.success(request, f'Subject "{subject_title}" ({subject_code}) deleted successfully. Related sections and grades removed.')
     return redirect('admin_subjects')
+
+def delete_student(request, student_id):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    if request.method != 'POST':
+        return redirect('admin_panel')
+    
+    student = get_object_or_404(Student, id=student_id)
+    student_name = f'{student.last_name}, {student.first_name}'
+    student_no_str = student.student_no
+    
+    # Delete cascades Grades via ForeignKey
+    student.delete()
+    
+    messages.success(request, f'Student "{student_name}" ({student_no_str}) deleted successfully. Related grade records removed.')
+    return redirect('admin_panel')
 
 def teacher_add_grade(request):
     teacher_id = request.session.get('teacher_id')

@@ -12,7 +12,7 @@
   <div class="page-wrap" style="padding-top:2rem;">
     <div style="background:var(--navy);border-radius:var(--radius-lg);
               padding:1.8rem 2rem;margin-bottom:2rem;
-              border:2px solid rgba(198,40,40,.4);
+              border:0 solid rgba(198,40,40,.4);
               display:flex;align-items:center;justify-content:space-between;
               flex-wrap:wrap;gap:1rem;" class="fade-up">
       <div>
@@ -120,7 +120,13 @@
                 <td style="font-size:.82rem;">{{ s.course }}</td>
                 <td style="text-align:center;">{{ s.year_level }}</td>
                 <td>
-                  <a href="{% url 'profile' s.pk %}" class="btn btn-outline btn-sm" style="font-size:.72rem;padding:.3rem .7rem;">View</a>
+                  {% comment %} <a href="{% url 'profile' s.pk %}" class="btn btn-outline btn-sm" style="font-size:.72rem;padding:.3rem .7rem;">View</a> {% endcomment %}
+                  <form method="post" action="{% url 'delete_student' s.pk %}" style="display:inline;" onsubmit="return confirm('Delete student {{ s.last_name }}, {{ s.first_name }} ({{ s.student_no }})? This cannot be undone.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm" style="font-size:.72rem;padding:10px;border:none; border-radius: 100%; background: rgba(255,0,0,0.2);color:white;margin-left:.5rem;">
+                      <img src="{% static 'portal/images/delete.png' %}" alt="Delete" style="width:16px;height:16px;vertical-align:middle;">
+                    </button>
+                  </form>
                 </td>
               </tr>
             {% endfor %}

@@ -1,4 +1,7 @@
 {% extends 'portal/base.html' %}
+{% load static %}
+
+
 {% block title %}
   CEC Grade Portal — Teachers
 {% endblock %}
@@ -40,7 +43,9 @@
 
     <div class="card fade-up-3">
       <div class="card-header">
-        <h3>Teachers</h3>
+        <h3 class="">Teachers</h3>
+        <input type="text" id="searchInput" placeholder="Search teachers..." onkeyup="filterTeachers()" style="padding:8px; width:250px; border:1px solid #ccc; border-radius:6px;" />
+
         <span style="font-size:.8rem;color:var(--text-light);">{{ teachers|length }} records</span>
       </div>
       <div class="grade-table-wrap">
@@ -49,17 +54,19 @@
             <tr>
               <th class="hidden md:flex">ID</th>
               <th>Name</th>
-              <th class="hidden md:flex">Email</th>
+              <th class="">Email</th>
               <th>Department</th>
               <th>Subjects</th>
+              <th></th>
             </tr>
+
           </thead>
           <tbody>
             {% for teacher in teachers %}
-              <tr>
+              <tr class="teachers-row" data-teacher-name="{{ teacher.name|lower }}">
                 <td class="hidden md:flex" style="color:var(--text-light);font-family:var(--mono);">{{ teacher.teacher_id }}</td>
                 <td class="subject-name">{{ teacher.name }}</td>
-                <td class="hidden md:flex" style="font-size:.82rem;">{{ teacher.email|default:'—' }}</td>
+                <td class="" style="font-size:.82rem;">{{ teacher.email|default:'—' }}</td>
                 <td style="font-size:.82rem;">{{ teacher.department|default:'—' }}</td>
                 <td style="font-size:.82rem;">
                   {% for subject in teacher.subjects.all %}
@@ -68,11 +75,37 @@
                     No subjects assigned
                   {% endfor %}
                 </td>
+                <td style="padding: 0.5rem 0;">
+                  <form method="POST" action="{% url 'delete_teacher' teacher.id %}" onsubmit="return confirm('Are you sure you want to delete teacher {{ teacher.name }} ({{ teacher.teacher_id }})? This will delete related sections and grades.');" style="display: inline; width: 100%; displa
+                  y: flex; justify-content: center;">
+                    {% csrf_token %}
+                    <button type="submit" style="border: none; border-radius: 100%; background: rgba(255, 0, 0, 0.2); cursor: pointer; padding: 10px;">
+                      <img src="{% static 'portal/images/delete.png' %}" alt="Delete" width="16" height="16" style="vertical-align: middle;">
+                    </button>
+                  </form>
+                </td>
               </tr>
+
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
   </div>
+    <script>
+    function filterTeachers() {
+      let input = document.getElementById('searchInput');
+      let filter = input.value.toLowerCase();
+      let rows = document.getElementsByClassName('teachers-row');
+    
+      for (let i = 0; i < rows.length; i++) {
+        let name = rows[i].innerText.toLowerCase();
+        if (name.includes(filter)) {
+          rows[i].style.display = '';
+        } else {
+          rows[i].style.display = 'none';
+        }
+      }
+    }
+  </script>
 {% endblock %}
