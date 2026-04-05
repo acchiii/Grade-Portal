@@ -1,4 +1,7 @@
 {% extends 'portal/base.html' %}
+{% load static %}
+
+
 {% block title %}
   CEC Grade Portal — Subjects
 {% endblock %}
@@ -20,27 +23,64 @@
     </div>
 
     <div class="card fade-up-2 w-full justify-items-stretch">
+      <div class="flex justify-between items-center mb-4 w-full">
+        <input type="text" id="searchInput" placeholder="Search subjects..." onkeyup="filterSubjects()" style="padding:8px; width:250px; border:1px solid #ccc; border-radius:6px;" />
+       
+        <a href="{% url 'admin_add_subject' %}">
+          <img src="{% static 'portal/images/add.png' %}" alt="">
+        </a>
+      </div>
+       <br>
       <table class="table">
         <tr class="mb-8">
           <thead>
             <th class="text-left">Code</th>
-            <th class="text-left hidden md:flex">Title</th>
+            <th class="text-left flex">Title</th>
             <th class="text-left">Units</th>
             <th class="text-left">Department</th>
+            <th class="text-left">Actions</th>
+
           </thead>
+          <hr style="opacity: 0.2;">
         </tr>
         <tbody>
           {% for subject in subjects %}
-            <tr>
+            <tr class="subject-row">
               <td>{{ subject.code }}</td>
-              <td class="hidden md:flex">{{ subject.title }}</td>
+              <td class="">{{ subject.title }}</td>
               <td>{{ subject.units }}</td>
               <td>{{ subject.department }}</td>
+              <td style="padding: 0.5rem 0;">
+                <form method="POST" action="{% url 'delete_subject' subject.id %}" onsubmit="return confirm('Are you sure you want to delete "{{ subject.title }}" ({{ subject.code }})? This will delete related sections and grades.');" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" style="border: none; background: rgba(255, 0, 0, 0.1); border-radius: 100%; cursor: pointer; padding: 8px;">
+                    <img src="{% static 'portal/images/delete.png' %}" alt="Delete" width="20" height="20" style="vertical-align: middle;">
+                  </button>
+                </form>
+              </td>
             </tr>
+
           {% endfor %}
         </tbody>
       </table>
     </div>
-    <a href="{% url 'admin_add_subject' %}" class="btn btn-primary w-20 rounded">+</a>
+   
   </div>
+
+  <script>
+    function filterStudents() {
+      let input = document.getElementById('searchInput');
+      let filter = input.value.toLowerCase();
+      let rows = document.getElementsByClassName('subject-row');
+    
+      for (let i = 0; i < rows.length; i++) {
+        let name = rows[i].innerText.toLowerCase();
+        if (name.includes(filter)) {
+          rows[i].style.display = '';
+        } else {
+          rows[i].style.display = 'none';
+        }
+      }
+    }
+  </script>
 {% endblock %}

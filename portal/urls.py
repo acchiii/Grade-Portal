@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/teachers/', views.admin_teachers, name='admin_teachers'),
     path('admin/subjects/', views.admin_subjects, name='admin_subjects'),
     path('admin/add-subject/', views.admin_add_subject, name='admin_add_subject'),
+    path('admin/subjects/<int:subject_id>/delete/', views.delete_subject, name='delete_subject'),
     path('admin/login/', views.admin_login, name='admin_login'),
     path('admin/panel/', views.admin_panel, name='admin_panel'),
     path('admin/', views.admin_panel),

@@ -446,6 +446,24 @@ def admin_add_subject(request):
     
     return render(request, 'portal/admin_add_subject.html', {'form': form})
 
+def delete_subject(request, subject_id):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    if request.method != 'POST':
+        return redirect('admin_subjects')
+    
+    subject = get_object_or_404(Subject, id=subject_id)
+    subject_title = subject.title
+    subject_code = subject.code
+    
+    # Delete cascades ClassSections/Grades, M2M Teacher.subjects cleared automatically
+    subject.delete()
+    
+    messages.success(request, f'Subject "{subject_title}" ({subject_code}) deleted successfully. Related sections and grades removed.')
+    return redirect('admin_subjects')
+
 def teacher_add_grade(request):
     teacher_id = request.session.get('teacher_id')
     if not teacher_id:
