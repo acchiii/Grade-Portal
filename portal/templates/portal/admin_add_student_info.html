@@ -29,7 +29,6 @@
         <div class="alert alert-error">
           <span class="alert-icon">&#10007;</span>
           <div>
-            <strong>Form Errors:</strong><br>
             {% for field in form %}
               {% for err in field.errors %}
                 {{ field.label }}: {{ err }}<br />
@@ -40,17 +39,6 @@
             {% endfor %}
           </div>
         </div>
-      {% endif %}
-
-      {% comment %} DEBUG SECTION - REMOVE AFTER FIX {% endcomment %}
-      {% if debug_post %}
-      <div class="alert alert-info">
-        <h4>🔍 DEBUG INFO (Console & Page)</h4>
-        <p><strong>Raw POST:</strong> {{ debug_post }}</p>
-        <p><strong>Cleaned Data:</strong> {{ debug_cleaned }}</p>
-        <p><strong>Form Errors:</strong> {{ debug_errors }}</p>
-        <p><strong>Check browser console/server terminal for prints!</strong></p>
-      </div>
       {% endif %}
 
 <form method="POST">

@@ -54,15 +54,6 @@ class RegisterForm(forms.ModelForm):
 
 
 class AdminStudentForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Ensure required attrs
-        self.fields['student_no'].widget.attrs['required'] = True
-        self.fields['last_name'].widget.attrs['required'] = True
-        self.fields['first_name'].widget.attrs['required'] = True
-        self.fields['course'].widget.attrs['required'] = True
-        self.fields['year_level'].widget.attrs['required'] = True
-
     class Meta:
         model = Student
         fields = ['student_no', 'last_name', 'first_name', 'course', 'year_level']
@@ -101,24 +92,6 @@ class AdminStudentForm(forms.ModelForm):
                 'required': 'First name is required.',
             },
         }
-
-    def clean_student_no(self):
-        value = self.cleaned_data.get('student_no', '').strip()
-        if not value:
-            raise forms.ValidationError('Student number is required.')
-        return value
-
-    def clean_last_name(self):
-        value = self.cleaned_data.get('last_name', '').strip()
-        if not value:
-            raise forms.ValidationError('Last name is required.')
-        return value
-
-    def clean_first_name(self):
-        value = self.cleaned_data.get('first_name', '').strip()
-        if not value:
-            raise forms.ValidationError('First name is required.')
-        return value
 
 
 class StudentRegisterForm(forms.Form):

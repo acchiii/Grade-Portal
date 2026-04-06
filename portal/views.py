@@ -616,17 +616,8 @@ def admin_add_student(request):
     if not admin_id:
         return redirect('index')
     
-    print("=== DEBUG ADMIN_ADD_STUDENT ===")
-    print(f"Method: {request.method}")
-    print(f"Admin ID session: {admin_id}")
-    print(f"POST data: {request.POST}")
-    
     if request.method == 'POST':
         form = AdminStudentForm(request.POST)
-        print(f"Form errors: {form.errors}")
-        print(f"Form cleaned_data: {form.cleaned_data}")
-        print(f"Form is_valid: {form.is_valid()}")
-        
         if form.is_valid():
             student = form.save(commit=False)
             student.email = ''
@@ -634,16 +625,11 @@ def admin_add_student(request):
             student.is_staff = False
             student.is_superuser = False
             student.save()
-            print("*** STUDENT SAVED SUCCESSFULLY ***")
             return redirect('admin_panel')
-        else:
-            print("*** FORM INVALID - RENDERING WITH ERRORS ***")
     else:
         form = AdminStudentForm()
     
-    debug_cleaned = form.cleaned_data if request.method == 'POST' else {}
-    debug_errors = form.errors if request.method == 'POST' else {}
-    return render(request, 'portal/admin_add_student_info.html', {'form': form, 'debug_post': request.POST, 'debug_errors': debug_errors, 'debug_cleaned': debug_cleaned})
+    return render(request, 'portal/admin_add_student_info.html', {'form': form})
 
 
 @login_required
