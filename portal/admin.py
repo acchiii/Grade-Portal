@@ -1,12 +1,36 @@
 from django.contrib import admin
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django import forms
+from django.contrib.auth.forms import UserChangeForm
 from .models import Student, Subject, Grade, Feedback
 
 
-class StudentCreationForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
+class StudentCreationForm(forms.ModelForm):
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput(),
+                                help_text='Leave blank for inactive student (admin-added)')
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput(),
+                                help_text='Leave blank for inactive student')
+
+    class Meta:
         model  = Student
-        fields = ('student_no', 'first_name', 'last_name', 'email', 'course', 'year_level')
+        fields = ('student_no', 'first_name', 'last_name', 'course', 'year_level')
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
+        return password2
+
+    def save(self, commit=True):
+        student = super().save(commit=False)
+        password1 = self.cleaned_data.get('password1')
+        if password1:
+            student.set_password(password1)
+        else:
+            student.is_active = False  # Inactive if no password
+        if commit:
+            student.save()
+        return student
 
 
 class StudentChangeForm(UserChangeForm):

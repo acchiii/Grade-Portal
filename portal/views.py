@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Student, Grade, Feedback, Teacher, Admin, Subject, ClassSection, SchoolYear, Semester, COURSE_CHOICES, current_school_year
-from .forms  import LoginForm, RegisterForm, FeedbackForm, TeacherForm, GradeForm, SubjectForm, ClassSectionForm
+from .forms  import LoginForm, RegisterForm, FeedbackForm, TeacherForm, GradeForm, SubjectForm, ClassSectionForm, AdminStudentForm, StudentRegisterForm
 from django.db.models import Prefetch
 from django.contrib.auth import login, logout
 from django.contrib import messages
@@ -564,15 +564,86 @@ def logout_view(request):
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('grades')
-    form = RegisterForm(request.POST or None)
+    
+    form = StudentRegisterForm(request.POST or None)
     success = False
+    error_message = None
+    
     if request.method == 'POST' and form.is_valid():
-        form.save()
-        success = True
-        form = RegisterForm()   # reset
+        student_no = form.cleaned_data['student_no']
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+        
+        try:
+            # Find inactive student by student_no
+            student = Student.objects.get(student_no=student_no, is_active=False)
+        except Student.DoesNotExist:
+            form.add_error('student_no', 'No inactive student found with this ID. Please contact admin to add your record first.')
+            error_message = 'Student ID not found in admin records. Ask administrator to add you first.'
+        else:
+            # Check if email already used
+            if Student.objects.filter(email=email).exclude(pk=student.pk).exists():
+                form.add_error('email', 'This email is already registered to another student.')
+            else:
+                # Activate and set credentials
+                student.email = email
+                student.set_password(password)
+                student.is_active = True
+                student.save()
+                
+                # Auto-login
+                from django.contrib.auth import authenticate, login
+                user = authenticate(request, username=student_no, password=password)
+                if user:
+                    login(request, user)
+                    return redirect('grades')
+                else:
+                    error_message = 'Login failed after registration. Please login manually.'
+        
+        success = False
+        form = StudentRegisterForm(request.POST)  # Preserve data for errors
+    
     return render(request, 'portal/register.html', {
-        'form': form, 'success': success, 'current': 'register'
+        'form': form, 
+        'success': success, 
+        'error_message': error_message,
+        'current': 'register'
     })
+
+
+def admin_add_student(request):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    print("=== DEBUG ADMIN_ADD_STUDENT ===")
+    print(f"Method: {request.method}")
+    print(f"Admin ID session: {admin_id}")
+    print(f"POST data: {request.POST}")
+    
+    if request.method == 'POST':
+        form = AdminStudentForm(request.POST)
+        print(f"Form errors: {form.errors}")
+        print(f"Form cleaned_data: {form.cleaned_data}")
+        print(f"Form is_valid: {form.is_valid()}")
+        
+        if form.is_valid():
+            student = form.save(commit=False)
+            student.email = ''
+            student.is_active = False
+            student.is_staff = False
+            student.is_superuser = False
+            student.save()
+            print("*** STUDENT SAVED SUCCESSFULLY ***")
+            return redirect('admin_panel')
+        else:
+            print("*** FORM INVALID - RENDERING WITH ERRORS ***")
+    else:
+        form = AdminStudentForm()
+    
+    debug_cleaned = form.cleaned_data if request.method == 'POST' else {}
+    debug_errors = form.errors if request.method == 'POST' else {}
+    return render(request, 'portal/admin_add_student_info.html', {'form': form, 'debug_post': request.POST, 'debug_errors': debug_errors, 'debug_cleaned': debug_cleaned})
 
 
 @login_required
@@ -757,3 +828,7 @@ def delete_section(request, section_id):
     
     messages.success(request, f'Section {section_name} ({subject}) deleted successfully.')
     return redirect('teacher')
+
+
+# REMOVED DUPLICATE admin_add_student using RegisterForm (caused password error)
+# Keep only the AdminStudentForm version above

@@ -19,7 +19,7 @@
 
     <div class="card fade-up-2">
       <div class="card-header">
-        <h3>Student Information</h3>
+      <h3>Activate Account</h3>
       </div>
 
       {% if form.errors %}
@@ -37,11 +37,17 @@
           </div>
         </div>
       {% endif %}
+      {% if error_message %}
+        <div class="alert alert-error">
+          <span class="alert-icon">&#10007;</span>
+          <div>{{ error_message }}</div>
+        </div>
+      {% endif %}
       {% if success %}
         <div class="alert alert-success">
           <span class="alert-icon">&#10003;</span>
           <div>
-            Account created successfully! You can now <a href="{% url 'login' %}">log in</a>.
+            Account activated successfully! Redirecting to your grades...
           </div>
         </div>
       {% endif %}
@@ -50,41 +56,27 @@
         {% csrf_token %}
         <div class="form-row form-row-2">
           <div class="form-group">
-            <label for="id_last_name">Last Name <span style="color:var(--red);">*</span></label>
-            {{ form.last_name }}
-          </div>
-          <div class="form-group">
-            <label for="id_first_name">First Name <span style="color:var(--red);">*</span></label>
-            {{ form.first_name }}
-          </div>
-        </div>
-        <div class="form-row form-row-2">
-          <div class="form-group">
-            <label for="id_student_no">Student Number <span style="color:var(--red);">*</span></label>
+            <label for="{{ form.student_no.id_for_label }}">Student Number <span style="color:var(--red);">*</span></label>
             {{ form.student_no }}
-            <p class="form-hint">Format: YYYY-NNNN</p>
+            <p class="form-hint">Enter your official student ID (added by administrator)</p>
+            {% if form.student_no.errors %}
+              <div class="form-error">{{ form.student_no.errors.0 }}</div>
+            {% endif %}
           </div>
           <div class="form-group">
-            <label for="id_email">Email <span style="color:var(--red);">*</span></label>
+            <label for="{{ form.email.id_for_label }}">Email <span style="color:var(--red);">*</span></label>
             {{ form.email }}
-          </div>
-        </div>
-        <div class="form-row form-row-2">
-          <div class="form-group">
-            <label for="id_course">Course / Program</label>
-            {{ form.course }}
-          </div>
-          <div class="form-group">
-            <label for="id_year_level">Year Level</label>
-            {{ form.year_level }}
+            {% if form.email.errors %}
+              <div class="form-error">{{ form.email.errors.0 }}</div>
+            {% endif %}
           </div>
         </div>
         <div class="divider"></div>
         <div class="form-group">
-          <label for="id_password">Portal Password <span style="color:var(--red);">*</span></label>
+          <label for="{{ form.password.id_for_label }}">Portal Password <span style="color:var(--red);">*</span></label>
           {{ form.password }}
         </div>
-        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+        <button type="submit" class="btn btn-primary btn-full">Activate Account & Sign In</button>
       </form>
 
       <div class="divider"></div>

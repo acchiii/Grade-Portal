@@ -1,0 +1,6 @@
+.form-error {
+  color: var(--red);
+  font-size: .8rem;
+  margin-top: .25rem;
+  font-weight: 500;
+}

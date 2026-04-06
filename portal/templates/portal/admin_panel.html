@@ -68,6 +68,7 @@
       <div class="card">
         <h3 class="eyebrow">Subject Management</h3>
         <p class="">Add new subjects and view all subjects.</p>
+        <br><br>
         <div class="flex justify-end items-end">
           <a href="{% url 'admin_add_subject' %}" style="font-size: 1em; font-weight: 600; border-radius: 15px; padding: 6px 18px; font-family: monospace;   color: white;">
              <img src="{% static 'portal/images/add.png' %}" alt="">
@@ -80,6 +81,7 @@
       <div class="card">
         <h3 class="eyebrow">Feedbacks</h3>
         <p class="">View system feedbacks.</p>
+        <br>
         <div class="card-action flex justify-end h-[80%]">
           <a href="#allfeedback" style="font-size: 1em; font-weight: 600; border-radius: 15px; padding: 6px 18px; font-family: monospace; border: 1px solid rgba(0,0,0,0.0)">
              <img src="{% static 'portal/images/view.png' %}" alt="">
@@ -95,7 +97,14 @@
         <div style="margin-bottom:10px;">
           <input type="text" id="studentSearch" placeholder="Search student..." style="padding:.5rem; width:100%; border-radius:10px; border:1px solid #ccc;" />
         </div>
-        <span style="font-size:.8rem;color:var(--text-light);">{{ students|length }} records</span>
+
+        <div class="flex">
+          
+          <a href="{% url 'admin_add_student' %}">
+            <img src="{% static 'portal/images/add.png' %}" alt="">
+          </a>
+          {% comment %} <span style="font-size:.8rem;color:var(--text-light);">{{ students|length }} records</span> {% endcomment %}
+        </div>
       </div>
       <div class="grade-table-wrap">
         <table class="grade-table">
@@ -110,7 +119,7 @@
               <th></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="student-table">
             {% for s in students %}
               <tr>
                 <td class="hidden" style="color:var(--text-light);font-family:var(--mono);">{{ s.pk }}</td>
@@ -247,7 +256,7 @@
   <script>
     document.getElementById('studentSearch').addEventListener('keyup', function () {
       let input = this.value.toLowerCase()
-      let rows = document.querySelectorAll('.grade-table tbody tr')
+      let rows = document.querySelectorAll('.student-table')
     
       rows.forEach((row) => {
         let text = row.innerText.toLowerCase()

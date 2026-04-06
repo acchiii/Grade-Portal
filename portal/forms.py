@@ -53,6 +53,89 @@ class RegisterForm(forms.ModelForm):
         return student
 
 
+class AdminStudentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Ensure required attrs
+        self.fields['student_no'].widget.attrs['required'] = True
+        self.fields['last_name'].widget.attrs['required'] = True
+        self.fields['first_name'].widget.attrs['required'] = True
+        self.fields['course'].widget.attrs['required'] = True
+        self.fields['year_level'].widget.attrs['required'] = True
+
+    class Meta:
+        model = Student
+        fields = ['student_no', 'last_name', 'first_name', 'course', 'year_level']
+        widgets = {
+            'student_no': forms.TextInput(attrs={
+                'placeholder': 'e.g. 2312100',
+                'required': 'required',
+                'autocomplete': 'off'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'placeholder': 'Enter last name',
+                'required': 'required'
+            }),
+            'first_name': forms.TextInput(attrs={
+                'placeholder': 'Enter first name', 
+                'required': 'required'
+            }),
+            'course': forms.Select(attrs={'required': 'required'}),
+            'year_level': forms.Select(attrs={'required': 'required'}),
+        }
+        labels = {
+            'student_no': 'Student Number',
+            'last_name': 'Last Name',
+            'first_name': 'First Name',
+            'course': 'Course',
+            'year_level': 'Year Level',
+        }
+        error_messages = {
+            'student_no': {
+                'required': 'Student number is required.',
+            },
+            'last_name': {
+                'required': 'Last name is required.',
+            },
+            'first_name': {
+                'required': 'First name is required.',
+            },
+        }
+
+    def clean_student_no(self):
+        value = self.cleaned_data.get('student_no', '').strip()
+        if not value:
+            raise forms.ValidationError('Student number is required.')
+        return value
+
+    def clean_last_name(self):
+        value = self.cleaned_data.get('last_name', '').strip()
+        if not value:
+            raise forms.ValidationError('Last name is required.')
+        return value
+
+    def clean_first_name(self):
+        value = self.cleaned_data.get('first_name', '').strip()
+        if not value:
+            raise forms.ValidationError('First name is required.')
+        return value
+
+
+class StudentRegisterForm(forms.Form):
+    student_no = forms.CharField(label='Student Number', max_length=20,
+                                 widget=forms.TextInput(attrs={'placeholder': 'Enter your student ID e.g. 2312100'}))
+    email = forms.EmailField(label='Email',
+                             widget=forms.EmailInput(attrs={'placeholder': 'your.email@example.com'}))
+    password = forms.CharField(label='Password',
+                               widget=forms.PasswordInput(attrs={'placeholder': 'Create your portal password'}))
+
+    def clean_student_no(self):
+        student_no = self.cleaned_data['student_no']
+        if Student.objects.filter(student_no=student_no, is_active=True).exists():
+            raise forms.ValidationError('This student ID is already registered and active.')
+        return student_no
+
+
 class FeedbackForm(forms.ModelForm):
     SUBJECT_CHOICES = [
         ('', '— Select a topic —'),
