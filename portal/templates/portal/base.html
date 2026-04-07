@@ -123,17 +123,13 @@
         }
       }
       header .navbar {
-       
-
-       box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(12px);
-        
       }
       .site-footer {
-        
         backdrop-filter: blur(12px);
-        
-          box-shadow: 0 -3px 4px rgba(0, 0, 0, 0.2);
+      
+        box-shadow: 0 -3px 4px rgba(0, 0, 0, 0.2);
       }
     </style>
   </head>
@@ -174,7 +170,7 @@
             <li>
               <a href="{% url 'profile' request.user.pk %}" class="{% if current == 'profile' %}active{% endif %}">Profile</a>
             </li>
-          {% elif not request.session.admin_id or not request.session.teacher_id  %}
+          {% elif not request.session.admin_id or not request.session.teacher_id %}
             <li>
               <a href="{% url 'login' %}" class="{% if current == 'login' %}active{% endif %}">Login</a>
             </li>

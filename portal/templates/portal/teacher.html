@@ -33,9 +33,9 @@
       <div class="card w-fit">
         <h3 class="text-md mb-10px eyebrow">
           {% if sections|length > 0 %}
-            Your Sections
+            Your Sections/Classes
           {% else %}
-            No Section Available
+            No Section/Class Available
           {% endif %}
         </h3>
         <ul class="pl-2 grid grid-cols-2 gap-7">
@@ -51,7 +51,7 @@
                       <form method="POST" action="{% url 'delete_section' section.id %}" onsubmit="return confirm('Delete section {{ section.section_name }} ({{ section.subject.title }})? This will remove all student enrollments and grades.')" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" style="padding: 8px; border-radius: 100%; background-color: rgba(255, 0, 0, 0.1); border:none; cursor:pointer;"><img src="{% static 'portal/images/delete.png' %}" alt="Delete" style="width:24px; height:24px;" /></button>
-                      </form>
+                      </form> 
                     </div>
                   </div>
                 </a>
