@@ -57,7 +57,6 @@
       .stat-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        
       }
       .navbar-nav {
         position: sticky;
@@ -86,29 +85,57 @@
         border: 1px solid rgba(0, 0, 0, 0.15);
       }
       
-    .animate-fade-up {
-      animation: fadeUp 0.6s ease-out both;
-    }
-    .animate-fade-in {
-      animation: fadeIn 0.6s ease-out both;
-    }
-     .animate-from-left {
-      animation: fLeft 0.6s ease-in-out both;
-    }
-    @keyframes fLeft {
-      0% { opacity: 0; transform: translateX(-100px); }
-      100% { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes fadeUp {
-      0% { opacity: 0; transform: translateY(24px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-  
-  </style>
+      .animate-fade-up {
+        animation: fadeUp 0.6s ease-out both;
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.6s ease-out both;
+      }
+      .animate-from-left {
+        animation: fLeft 0.6s ease-in-out both;
+      }
+      @keyframes fLeft {
+        0% {
+          opacity: 0;
+          transform: translateX(-100px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes fadeUp {
+        0% {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      header .navbar {
+       
+
+       box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(12px);
+        
+      }
+      .site-footer {
+        
+        backdrop-filter: blur(12px);
+        
+          box-shadow: 0 -3px 4px rgba(0, 0, 0, 0.2);
+      }
+    </style>
   </head>
   <body>
     <div class="topbar">
@@ -147,7 +174,7 @@
             <li>
               <a href="{% url 'profile' request.user.pk %}" class="{% if current == 'profile' %}active{% endif %}">Profile</a>
             </li>
-          {% else %}
+          {% elif not request.session.admin_id or not request.session.teacher_id  %}
             <li>
               <a href="{% url 'login' %}" class="{% if current == 'login' %}active{% endif %}">Login</a>
             </li>
@@ -182,8 +209,7 @@
                   </div>
                 {% endif %}
 
-                {% if request.user.is_authenticated %}
-                  
+                {% if request.user.is_authenticated or request.session.admin_id or request.session.teacher_id %}
                   <a href="{% url 'logout' %}" class="border-full w-full h-full">
                     <div class="nav-avatar">
                       <img src="{% static 'portal/images/logout.png' %}" alt="Logout" width="100%" height="100%" />
@@ -210,54 +236,52 @@
         <div class="mobile-menu md:hidden animate-fade-up" id="mobile-menu">
           <ul>
             <li>
-              <img src="{% static '/portal/images/home.png' %}" alt="">
+              <img src="{% static '/portal/images/home.png' %}" alt="" />
               <a href="{% url 'index' %}" class="{% if current == 'index' %}active{% endif %}">Home</a>
             </li>
 
             {% if request.user.is_authenticated %}
               <li>
-                <img src="{% static 'portal/images/grades.png' %}" alt="">
+                <img src="{% static 'portal/images/grades.png' %}" alt="" />
                 <a href="{% url 'grades' %}" class="{% if current == 'grades' %}active{% endif %}">My Grades</a>
               </li>
               <li>
-                <img src="{% static 'portal/images/profile2.png' %}" alt="">
+                <img src="{% static 'portal/images/profile2.png' %}" alt="" />
                 <a href="{% url 'profile' request.user.pk %}" class="{% if current == 'profile' %}active{% endif %}">Profile</a>
               </li>
             {% else %}
               <li>
-                <img src="{% static 'portal/images/login.png' %}" alt="">
+                <img src="{% static 'portal/images/login.png' %}" alt="" />
                 <a href="{% url 'login' %}" class="{% if current == 'login' %}active{% endif %}">Login</a>
               </li>
               <li>
-                <img src="{% static 'portal/images/register.png' %}" alt="">
+                <img src="{% static 'portal/images/register.png' %}" alt="" />
 
                 <a href="{% url 'register' %}" class="{% if current == 'register' %}active{% endif %}">Register</a>
               </li>
             {% endif %}
 
             <li>
-              <img src="{% static 'portal/images/contact.png' %}" alt="">
+              <img src="{% static 'portal/images/contact.png' %}" alt="" />
               <a href="{% url 'contact' %}" class="{% if current == 'contact' %}active{% endif %}">Contact</a>
             </li>
             <li>
-              <img src="{% static 'portal/images/teacher.png' %}" alt="">
+              <img src="{% static 'portal/images/teacher.png' %}" alt="" />
               <a href="{% url 'teacher_login' %}" class="teacher-link">Teacher</a>
             </li>
             <li>
-              <img src="{% static 'portal/images/admin.png' %}" alt="">
+              <img src="{% static 'portal/images/admin.png' %}" alt="" />
               <a href="{% url 'admin_login' %}" id="mobile-adminbtn" class="admin-link">Admin</a>
             </li>
 
             {% if request.user.is_authenticated or request.session.admin_id %}
               <li>
-               
-                  
-                  <img src="{% static 'portal/images/logout.png' %}" alt="">
-                  <a href="{% url 'logout' %}" class="{% if current == 'contact' %}active{% endif %}">Logout</a>     
+                <img src="{% static 'portal/images/logout.png' %}" alt="" />
+                <a href="{% url 'logout' %}" class="{% if current == 'contact' %}active{% endif %}">Logout</a>
               </li>
             {% else %}
               <li>
-                <img src="{% static 'portal/images/login.png' %}" alt="">
+                <img src="{% static 'portal/images/login.png' %}" alt="" />
                 <a href="{% url 'login' %}" class="btn-nav">Sign In</a>
               </li>
             {% endif %}
@@ -266,8 +290,8 @@
       </div>
     </header>
 
-    <div class="card animate-fade-up" id="frm">
-      <form action="{% url 'admin_login' %}" method="POST" class="adminform fade-up-4">
+    <div class="card" id="frm">
+      <form action="{% url 'admin_login' %}" method="POST" class="adminform fade-up-4 animate-fade-up">
         {% csrf_token %}
         <div class="formcont">
           <h2 style="margin-bottom: 2rem; margin-top: 5%; text-align: center; font-size: 1.7rem; font-weight: 600;">Admin Login</h2>
@@ -329,7 +353,6 @@
       } else {
         console.log('Mobile menu elements not found')
       }
-
       
       const frm = document.getElementById('frm')
       const adminBtn = document.getElementById('adminbtn')
@@ -345,7 +368,7 @@
             document.body.style.overflow = frm.classList.contains('active') ? 'hidden' : 'auto'
           })
         }
-        
+      
         if (mobileAdminBtn) {
           mobileAdminBtn.addEventListener('click', function (event) {
             event.preventDefault()
@@ -354,7 +377,7 @@
             document.body.style.overflow = frm.classList.contains('active') ? 'hidden' : 'auto'
           })
         }
-        
+      
         frm.addEventListener('click', function (event) {
           if (event.target === this) {
             frm.classList.remove('active')
@@ -362,7 +385,7 @@
             document.body.style.overflow = 'auto'
           }
         })
-        
+      
         if (closeBtn) {
           closeBtn.addEventListener('click', function () {
             frm.classList.remove('active')
@@ -385,7 +408,7 @@
       </div>
       <div style="text-align:center;">
         <div>
-          &copy;{% now 'Y' %} Cebu Eastern College. All rights reserved.
+          &copy;{% now 'Y' %}Cebu Eastern College. All rights reserved.
         </div>
         <div style="margin-top:.2rem;">Student Grade Portal &mdash; A.Y. {{ sy }}</div>
       </div>
