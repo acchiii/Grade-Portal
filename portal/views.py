@@ -398,9 +398,13 @@ def admin_add_teacher(request):
         if form.is_valid():
             teacher = form.save(commit=False)
             teacher.set_password(form.cleaned_data['password'])
-            teacher.save()
+            try:
+                teacher.save()
+            except Exception as e:
+                messages.error(request, f"Error saving teacher: {str(e)}")
+                return render(request, 'portal/admin_add_teacher.html', {'form': form, 'error': 'Failed to save: ' + str(e)})
             form.save_m2m()  # Save many-to-many relationships (subjects)
-            return redirect('admin_panel')
+            return redirect('admin_teachers')
     else:
         form = TeacherForm()
     

@@ -46,7 +46,7 @@
         <h3 class="">Teachers</h3>
         <input type="text" id="searchInput" placeholder="Search teachers..." onkeyup="filterTeachers()" style="padding:8px; width:250px; border:1px solid #ccc; border-radius:6px;" />
 
-        <span style="font-size:.8rem;color:var(--text-light);">{{ teachers|length }} records</span>
+        <a href="{% url 'admin_add_teacher' %}"><img src="{% static 'portal/images/add.png' %}" alt="Add Teacher" /></a>
       </div>
       <div class="grade-table-wrap">
         <table class="grade-table">

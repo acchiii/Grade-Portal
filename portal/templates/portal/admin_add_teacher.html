@@ -17,9 +17,11 @@
       <div class="eyebrow">Admin Panel</div>
       <h2>Add New Teacher</h2>
       <p>Create a new teacher account.</p>
+       
     </div>
 
     <div class="card fade-up-2">
+     
       <form method="POST">
         {% csrf_token %}
         {% for field in form %}
@@ -30,7 +32,7 @@
               <small class="form-help">{{ field.help_text }}</small>
             {% endif %}
             {% if field.errors %}
-              <div class="form-error">{{ field.errors.0 }}</div>
+              <div class="form-error" style="color: red;">{{ field.errors.0 }}</div>
             {% endif %}
           </div>
         {% endfor %}

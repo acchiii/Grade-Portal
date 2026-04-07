@@ -187,13 +187,17 @@
             <li>
               <a href="{% url 'teacher_login' %}" class="{% if current == 'teacher' %}active{% endif %}">Teacher</a>
             </li>
-            <li>
-              <a href="{% url 'admin_login' %}" id="adminbtn" class="admin-link border-full">
-                <div class="nav-avatar">
-                  <img src="{% static 'portal/images/administrator.png' %}" alt="Admin" width="100%" height="100%" class="rounded-full" />
-                </div>
-              </a>
-            </li>
+
+            {% if not request.session.admin_id %}
+              <li>
+                <a href="{% url 'admin_login' %}" id="adminbtn" class="admin-link border-full">
+                  <div class="nav-avatar">
+                    <img src="{% static 'portal/images/administrator.png' %}" alt="Admin" width="100%" height="100%" class="rounded-full" />
+                  </div>
+                </a>
+              </li>
+            {% endif %}
+            
           {% endif %}
           {% if request.user.is_authenticated or request.session.admin_id %}
             <li>
