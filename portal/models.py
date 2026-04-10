@@ -197,7 +197,8 @@ class ClassSection(models.Model):
     semester = models.CharField(max_length=10, choices=SEMESTER_CHOICES, default='1st')
     school_yr = models.CharField(max_length=20, default=current_school_year)
     students = models.ManyToManyField(Student, blank=True)
-   
+    admin_approved = models.BooleanField(default=False)
+    submitted = models.BooleanField(default=False)
    
     class Meta:
         unique_together = ['teacher', 'subject', 'section_name', 'semester', 'school_yr']
