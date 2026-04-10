@@ -710,8 +710,7 @@ def grades_view(request):
     semester_filter = request.GET.get('semester', '')
     
     base_query = Grade.objects.filter(
-        student=student, 
-        section__admin_approved=True
+        student=student
     ).select_related('subject', 'section')
     
     if semester_filter:

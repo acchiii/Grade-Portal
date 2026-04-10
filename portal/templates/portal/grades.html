@@ -112,10 +112,10 @@
                     <td class="subject-name">{{ row.grade.subject.title }}</td>
                     <td class="grade-val" style="text-align:center;">{{ row.grade.subject.units }}</td>
                     <td class="grade-val" style="text-align:center;">
-                      {% if not row.is_pending and row.grade.prelim is not None %}
+                      {% if not row.is_pending %}
                         {{ row.grade.prelim|floatformat:1 }}
                       {% elif row.is_pending %}
-                        <span style="color:var(--text-light);">Pending</span>
+                        <span style="color:var(--text-light);">-</span>
                       {% else %}
                         &mdash;
                       {% endif %}
