@@ -64,7 +64,7 @@
                     {% endif %}
                   </td>
                   <td>
-                    {% comment %} <a href="/section/{{ section.section_name }}/{{ section.subject.code }}/{{ section.semester }}/{{ section.school_yr }}/">👁️</a> {% endcomment %}
+                    <a href="{% url 'admin_section_view' section.id %}">👁️</a>
                     {% if not section.admin_approved %}
                       <form method="post" action="" style="display:inline;" class="ml-2">
                         {% csrf_token %}

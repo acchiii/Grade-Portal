@@ -35,5 +35,6 @@ urlpatterns = [
     path('admin/add-student/', views.admin_add_student, name='admin_add_student'),
     path('admin/bulk-import-students/', views.bulk_import_students, name='bulk_import_students'),
     path('admin/submitted/', views.admin_submitted, name='admin_submitted'),
+    path('admin/section_view/<int:section_id>/', views.admin_section_view, name='admin_section_view'),
     path('contact/', views.contact_view, name='contact'),
 ]

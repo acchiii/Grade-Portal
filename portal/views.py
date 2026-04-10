@@ -443,6 +443,35 @@ def teacher_submit(request, section_id):
                     section.semester,
                     section.school_yr)
 
+def admin_section_view(request, section_id):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    section = get_object_or_404(ClassSection, id=section_id)
+    if not section.submitted:
+        messages.warning(request, "This section has not been submitted by teacher.")
+        return redirect('admin_submitted')
+    
+    students = section.students.all().prefetch_related(
+        Prefetch(
+            'grades',
+            queryset=Grade.objects.filter(
+                section=section,
+                subject=section.subject
+            ),
+            to_attr='section_grades'
+        )
+    )
+    
+    return render(request, 'portal/admin_section_view.html', {
+        'section': section,
+        'students': students,
+        'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
+    })
+
+
 def admin_submitted(request):
     admin_id = request.session.get('admin_id')
     if not admin_id:

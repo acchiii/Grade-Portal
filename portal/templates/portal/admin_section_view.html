@@ -1,0 +1,219 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+{% block title %}
+  CEC Grade Portal — Section View
+{% endblock %}
+
+{% block content %}
+  <div class="page-wrap" style="padding-top:2.5rem;">
+    <div class="breadcrumb">
+      <a href="{% url 'index' %}">Home</a>
+      <span class="sep">›</span>
+      <a href="{% url 'admin_panel' %}">Admin Panel</a>
+      <span class="sep">›</span>
+      <span>Section Review</span>
+    </div>
+
+    <div class="section-header fade-up">
+      <div class="eyebrow">{{ section.section_name }}</div>
+      <h2>Section Info</h2>
+      <p>Your students in this section.</p>
+    </div>
+
+    <div class="card fade-up-2 grade-table-wrap">
+      <!-- No form for admin read-only -->
+
+        <!-- HEADER CONTROLS -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; gap:10px;">
+          <!-- SEARCH -->
+          <input type="text" id="searchInput" placeholder="Search student..." onkeyup="filterStudents()" style="padding:8px; width:250px; border:1px solid #ccc; border-radius:6px;" />
+          <span style="color: var(--text-light);">Read-only review</span>
+        </div>
+
+        <!-- TABLE -->
+        <div style="overflow-x:auto;">
+          <table class="grade-table" style="min-width: 800px; min-height: 30vh;">
+            <thead>
+              <tr>
+                <th style="text-align:left; border-top-left-radius: 10px;">Student Name</th>
+                <th style="text-align:center;">Prelim</th>
+                <th style="text-align:center;">Midterm</th>
+                <th style="text-align:center;">Semi</th>
+                <th style="text-align:center;">Final</th>
+                <th style="text-align:center; border-top-right-radius: 10px;">Remarks</th>
+                {% comment %} <th style="text-align:center; border-top-right-radius: 10px;">Action</th> {% endcomment %}
+              </tr>
+            </thead>
+
+            <tbody id="studentTable">
+              {% for student in students %}
+                {% with grade=student.section_grades.0 %}
+                  <tr class="student-row" data-student-no="{{ student.student_no }}">
+                    <td style="padding:1rem;">{{ student.last_name }}, {{ student.first_name }} <span class="text-xsm text-red-500">({{ student.student_no }})</span></td>
+                    <td class="grade-val" style="padding:1rem .5rem; text-align:center;">
+                      <span style="text-align:center; min-width:70px; display:inline-block;">{{ grade.prelim|floatformat:2|default:'—' }}</span>
+                    </td>
+                    <td style="padding:8px;">
+                      <input disabled type="number" step="0.01" name="midterm_{{ student.id }}" value="{{ grade.midterm|default:'' }}" style="text-align:center; width:70px; padding:5px; border:1px solid var(--border); border-radius:4px;" />
+                    </td>
+                    <td style="padding:8px;">
+                      <input disabled type="number" step="0.01" name="semi_{{ student.id }}" value="{{ grade.semi|default:'' }}" style="text-align:center; width:70px; padding:5px; border:1px solid var(--border); border-radius:4px;" />
+                    </td>
+                    <td style="padding:8px;">
+                      <input disabled type="number" step="0.01" name="final_{{ student.id }}" value="{{ grade.final|default:'' }}" style="text-align:center; width:70px; padding:5px; border:1px solid var(--border); border-radius:4px;" />
+                    </td>
+                    <td style="padding:8px;">
+                      <select name="remarks_{{ student.id }}" style="width:100px; padding:5px; text-align:center;">
+                        <option value="" {% if not grade.remarks %}selected{% endif %}>Pending</option>
+                        <option value="PASSED" {% if grade.remarks == 'PASSED' %}selected{% endif %}>PASSED</option>
+                        <option value="FAILED" {% if grade.remarks == 'FAILED' %}selected{% endif %}>FAILED</option>
+                        <option value="INC" {% if grade.remarks == 'INC' %}selected{% endif %}>INC</option>
+                      </select>
+                    </td>
+                    <td style="padding:8px; text-align:center;">
+                      {% comment %} <button class="delete-student-btn" data-section-id="{{ section.id }}" data-student-no="{{ student.student_no }}" style="border:none; cursor:pointer; color:white;" title="Remove student">
+                        <img src="{% static 'portal/images/delete.png' %}" alt="" height="35" width="35" style="border-radius: 100%; background: rgba(220, 38, 38, 0.1); padding: 10px 10px;">
+                      </button> {% endcomment %}
+                    </td>
+                  </tr>
+                {% endwith %}
+              {% endfor %}
+            </tbody>
+          </table>
+            <div class="w-full flex justify-end">
+            
+              
+              {% if section.is_approved %}
+                <p class="text-green-500 font-bold">Section is already approved.</p>
+              {% else %}
+                <p class="text-yellow-500 font-bold">Section is not approved yet.</p>
+                {% comment %} <form method="post" action="{% url 'admin_submitted' %}" style="display:inline;" class="ml-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="approve_section" value="{{ section.id }}">
+                        <button type="submit" style="border-radius: 10px; padding: 8px; background-color: #4caf50; border: 1px solid #4caf50; color: white;">Approve</button>
+              </form> {% endcomment %}
+              {% endif %}
+                
+            
+              
+          </div>
+            
+        </div>
+      </form>
+
+      {% if messages %}
+        <div style="margin-top: 20px; padding: 10px; border-radius: 6px;">
+          {% for message in messages %}
+            {% comment %} <p style="{% if message.tags == 'success' %}color: #16a34a; background: #dcfce7;{% elif message.tags == 'error' %}color: #dc2626; background: #fef2f2;{% elif message.tags == 'warning' %}color: #d97706; background: #fef3c7;{% endif %} padding: 8px; border-radius: 4px; margin: 5px 0;">{{ message }}</p> {% endcomment %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.delete-student-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const sectionId = this.dataset.sectionId;
+          const studentNo = this.dataset.studentNo;
+          const fullName = this.parentElement.parentElement.querySelector('td:first-child').textContent.trim();
+          
+          if (!confirm(`Remove grade record of ${fullName}?`)) {
+            return;
+          }
+          
+          const csrfToken = getCookie('csrftoken');
+          const formData = new FormData();
+          formData.append('csrfmiddlewaretoken', csrfToken);
+          
+          fetch(`/teacher/section/remove/${sectionId}/${studentNo}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-CSRFToken': csrfToken,
+            }
+          })
+          .then(response => {
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else if (response.ok) {
+              location.reload();
+            } else {
+              alert('Error removing student. Please try again.');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Error removing student. Please try again.');
+          });
+        });
+      });
+    });
+
+    function filterStudents() {
+      let input = document.getElementById('searchInput');
+      let filter = input.value.toLowerCase();
+      let rows = document.getElementsByClassName('student-row');
+    
+      for (let i = 0; i < rows.length; i++) {
+        let name = rows[i].innerText.toLowerCase();
+        if (name.includes(filter)) {
+          rows[i].style.display = '';
+        } else {
+          rows[i].style.display = 'none';
+        }
+      }
+    }
+
+
+    document.getElementById('submitgrades').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const inputs = document.querySelectorAll('.grade-table input[type="number"]');
+      for (let input of inputs) {
+        if (input.value === '') {
+          alert('Please fill in all grade fields before submitting.');
+          return;
+        }
+      }
+      if (confirm('Submit grades for this section? You will not be able to edit grades after submission.')) {
+        window.location.href = "{% url 'teacher_submit' section.id %}";
+      }
+    });
+
+    document.getElementById('submitgrades').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const inputs = document.querySelectorAll('.grade-table input[type="number"]');
+      for (let input of inputs) {
+        if (input.value === '') {
+          alert('Please fill in all grade fields before submitting.');
+          return;
+        }
+      }
+      if (confirm('Approve grades for this section? This will allow students to view the grade in this subject.')) {
+        window.location.href = "{% url 'teacher_submit' section.id %}";
+      }
+    });
+    
+  </script>
+{% endblock %}
