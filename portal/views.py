@@ -373,7 +373,7 @@ def teacher_login(request):
         try:
             teacher = Teacher.objects.get(teacher_id=teacher_id)
             if teacher.check_password(password):
-                # request.session.flush() 
+                request.session.flush()
                 request.session['teacher_id'] = teacher.id
                 return redirect('teacher')
             else:

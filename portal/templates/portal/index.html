@@ -37,7 +37,9 @@
             <a href="{% url 'grades' %}" class="btn btn-gold">View My Grades</a>
             <a href="{% url 'profile' request.user.pk %}" class="btn btn-outline-white">My Profile</a>
           {% else %}
-            <a href="{% url 'login' %}" class="btn btn-gold">Student Login</a>
+          {% if not request.session.admin_id and not request.session.teacher_id %}
+          <a href="{% url 'login' %}" class="btn btn-gold">Student Login</a>
+          {% endif %}
             <a href="{% url 'register' %}" class="btn btn-outline-white">Register Account</a>
           {% endif %}
         </div>

@@ -170,7 +170,7 @@
             <li>
               <a href="{% url 'profile' request.user.pk %}" class="{% if current == 'profile' %}active{% endif %}">Profile</a>
             </li>
-          {% elif not request.session.admin_id or not request.session.teacher_id %}
+          {% elif not request.session.admin_id and not request.session.teacher_id %}
             <li>
               <a href="{% url 'login' %}" class="{% if current == 'login' %}active{% endif %}">Login</a>
             </li>
@@ -188,7 +188,7 @@
               <a href="{% url 'teacher_login' %}" class="{% if current == 'teacher' %}active{% endif %}">Teacher</a>
             </li>
 
-            {% if not request.session.admin_id %}
+            {% if not request.session.admin_id or not request.session.teacher_id %}
               <li>
                 <a href="{% url 'admin_login' %}" id="adminbtn" class="admin-link border-full">
                   <div class="nav-avatar">
