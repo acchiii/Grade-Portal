@@ -87,7 +87,7 @@ def admin_panel(request):
         'students':   students,
         'feedback':   feedback,
         'grade_rows': grade_rows,
-        'submitted': ClassSection.objects.filter(submitted__isnull=False).count(),
+        'submitted': ClassSection.objects.filter(submitted=True).count(),
         'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
         'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
 
