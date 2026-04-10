@@ -82,7 +82,7 @@ class Student(AbstractBaseUser):
     student_no  = models.CharField(max_length=20, unique=True)
     last_name   = models.CharField(max_length=100)
     first_name  = models.CharField(max_length=100)
-    email       = models.EmailField(unique=True, blank=True)
+    email       = models.EmailField(unique=True, blank=True, null=True)
     course      = models.CharField(max_length=10, choices=COURSE_CHOICES, default='BSIT')
     year_level  = models.IntegerField(choices=YEAR_CHOICES, default=1)
     created_at  = models.DateTimeField(auto_now_add=True)

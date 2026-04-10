@@ -30,7 +30,7 @@
           <select onchange="this.form.submit()" name="semester" style="padding:5px 10px;">
             <option value="">All Semesters</option>
             {% for sem in semesters %}
-              <option value="{{ sem }}" {% if semester_filter == sem %}selected{% endif %}>{{ sem }}</option>
+             <option value="{{ sem }}" {% if semester_filter == sem %}selected{% endif %}>{{ sem }}</option>
             {% endfor %}
           </select>
         </div>
@@ -112,35 +112,45 @@
                     <td class="subject-name">{{ row.grade.subject.title }}</td>
                     <td class="grade-val" style="text-align:center;">{{ row.grade.subject.units }}</td>
                     <td class="grade-val" style="text-align:center;">
-                      {% if row.grade.prelim is not None %}
+                      {% if not row.is_pending and row.grade.prelim is not None %}
                         {{ row.grade.prelim|floatformat:1 }}
+                      {% elif row.is_pending %}
+                        <span style="color:var(--text-light);">Pending</span>
                       {% else %}
                         &mdash;
                       {% endif %}
                     </td>
                     <td class="grade-val" style="text-align:center;">
-                      {% if row.grade.midterm is not None %}
+                      {% if not row.is_pending and row.grade.midterm is not None %}
                         {{ row.grade.midterm|floatformat:1 }}
+                      {% elif row.is_pending %}
+                        <span style="color:var(--text-light);">-</span>
                       {% else %}
                         &mdash;
                       {% endif %}
                     </td>
                     <td class="grade-val" style="text-align:center;">
-                      {% if row.grade.semi is not None %}
+                      {% if not row.is_pending and row.grade.semi is not None %}
                         {{ row.grade.semi|floatformat:1 }}
+                      {% elif row.is_pending %}
+                        <span style="color:var(--text-light);">-</span>
                       {% else %}
                         &mdash;
                       {% endif %}
                     </td>
                     <td style="text-align:center;">
-                      {% if row.grade.final is not None %}
+                      {% if row.is_pending %}
+                        <span class="grade-val grade-pending" style="font-size:1rem;font-weight:700;color:var(--text-light);">-</span>
+                      {% elif row.grade.final is not None %}
                         <span class="grade-val {{ row.gcls }}" style="font-size:1rem;font-weight:700;">{{ row.grade.final|floatformat:2 }}</span>
                       {% else %}
                         <span style="color:var(--text-light);">&mdash;</span>
                       {% endif %}
                     </td>
                     <td style="text-align:center;">
-                      {% if row.rem == 'PENDING' %}
+                      {% if row.is_pending %}
+                        <span class="grade-pill pill-pending" style="background:#fef3c7;color:#92400e;padding:4px 8px;border-radius:4px;font-size:.75rem;">PENDING</span>
+                      {% elif row.rem == 'PENDING' %}
                         <span class="grade-pill" style="background:var(--sky-pale);color:var(--text-light);">PENDING</span>
                       {% else %}
                         <span class="grade-pill {{ row.pill }}">{{ row.rem }}</span>
@@ -179,7 +189,7 @@
         </div>
       {% endfor %}
 
-      <div style="margin-top:1.4rem;padding-top:1.4rem;border-top:1px solid var(--border-light);
+      {% comment %} <div style="margin-top:1.4rem;padding-top:1.4rem;border-top:1px solid var(--border-light);
                   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
         <div style="font-size:.82rem;color:var(--text-light);">Grading Scale: 1.0 (Highest) &ndash; 3.0 (Passing) &ndash; 5.0 (Failed)</div>
         <div style="text-align:right;">
@@ -195,7 +205,7 @@
             </div>
           {% endif %}
         </div>
-      </div>
+      </div> {% endcomment %}
       {% comment %} {% endif %} {% endcomment %}
     </div>
 

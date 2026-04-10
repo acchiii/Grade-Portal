@@ -1,0 +1,44 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}
+  Bulk Import Students — CEC Grade Portal
+{% endblock %}
+
+{% block content %}
+  <div class="page-wrap" style="padding-top:2.5rem;">
+    <div class="breadcrumb">
+      <a href="{% url 'index' %}">Home</a>
+      <span class="sep">›</span>
+      <a href="{% url 'admin_panel' %}">Admin Panel</a>
+      <span class="sep">›</span>
+      <span>Bulk Import Students</span>
+    </div>
+
+    <div class="section-header fade-up">
+      <div class="eyebrow">Admin Panel</div>
+      <h2>Bulk Import Students from JSON</h2>
+      <p>Upload JSON file with student data</p>
+      <p>Sample JSON: <br> [ <br> {"student_no": "2312130", "last_name": "Santos", "first_name": "Mark", "course": "BSIT", "year_level": 1}, <br> {"student_no": "2312131", "last_name": "Reyes", "first_name": "Anna", "course": "BSHM", "year_level": 2} <br> ]</p>
+      <p>
+        <a href="/static/students_sample.json" download>Download sample JSON</a>
+      </p>
+    </div>
+
+    <div class="card fade-up">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">{{ form.json_file.label_tag }}
+          {{ form.json_file }}</div>
+        <button type="submit" class="btn btn-primary">Import Students</button>
+        <a href="{% url 'admin_students' %}" class="btn btn-outline">Cancel</a>
+      </form>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  </div>
+{% endblock %}

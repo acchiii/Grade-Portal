@@ -1,0 +1,29 @@
+[
+  {
+    "student_no": "2312130",
+    "last_name": "Santos",
+    "first_name": "Mark",
+    "email": "mark.santos1@gmail.com",
+    "course": "BSIT",
+    "year_level": 1,
+    "is_active": false
+  },
+  {
+    "student_no": "2312131",
+    "last_name": "Reyes",
+    "first_name": "Anna",
+    "email": "anna.reyes1@gmail.com",
+    "course": "BSHM",
+    "year_level": 2,
+    "is_active": false
+  },
+  {
+    "student_no": "2312132",
+    "last_name": "Garcia",
+    "first_name": "Juan",
+    "email": "juan.garcia@gmail.com",
+    "course": "BEED",
+    "year_level": 3,
+    "is_active": false
+  }
+]

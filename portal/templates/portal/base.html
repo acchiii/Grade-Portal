@@ -135,7 +135,7 @@
   </head>
   <body>
     <div class="topbar">
-      <span>Cebu Eastern College &mdash; Leon Kilat St., Cebu City, Philippines 6000</span>
+      <span style="color: transparent;">Cebu Eastern College &mdash; Leon Kilat St., Cebu City, Philippines 6000</span>
       <span>
         {% if request.user.is_authenticated %}
           Logged in as: <strong style="color:rgba(255,255,255,.85);">{{ request.user.first_name }} {{ request.user.last_name }}</strong>
@@ -199,8 +199,8 @@
             {% endif %}
             
           {% endif %}
-          {% if request.user.is_authenticated or request.session.admin_id %}
-            <li>
+          {% if request.user.is_authenticated or request.session.admin_id or request.session.teacher_id %}
+          <li>
               <div class="nav-user">
                 {% if not request.session.admin_id %}
                   {% comment %} <div class="nav-avatar">{{ request.user.first_name|first|upper }}</div> {% endcomment %}
@@ -274,11 +274,7 @@
               <a href="{% url 'admin_login' %}" id="mobile-adminbtn" class="admin-link">Admin</a>
             </li>
 
-            {% if request.user.is_authenticated or request.session.admin_id %}
-              <li>
-                <img src="{% static 'portal/images/logout.png' %}" alt="" />
-                <a href="{% url 'logout' %}" class="{% if current == 'contact' %}active{% endif %}">Logout</a>
-              </li>
+            {% if request.user.is_authenticated or request.session.admin_id or request.session.teacher_id %}<li><img src="{% static 'portal/images/logout.png' %}" alt="" /><a href="{% url 'logout' %}" class="{% if current == 'contact' %}active{% endif %}">Logout</a> </li>
             {% else %}
               <li>
                 <img src="{% static 'portal/images/login.png' %}" alt="" />

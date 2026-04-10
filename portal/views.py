@@ -1,9 +1,12 @@
+from asyncio.windows_events import NULL
+
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Student, Grade, Feedback, Teacher, Admin, Subject, ClassSection, SchoolYear, Semester, COURSE_CHOICES, current_school_year
-from .forms  import LoginForm, RegisterForm, FeedbackForm, TeacherForm, GradeForm, SubjectForm, ClassSectionForm, AdminStudentForm, StudentRegisterForm
+from .models import Student, Grade, Feedback, Teacher, Admin, Subject, ClassSection, SchoolYear, Semester, COURSE_CHOICES, DEPT_CHOICES, current_school_year
+from .forms import BulkStudentImportForm, AdminStudentForm
+from .forms  import LoginForm, FeedbackForm, TeacherForm, GradeForm, SubjectForm, ClassSectionForm, AdminStudentForm, StudentRegisterForm
 from django.db.models import Prefetch
 from django.contrib.auth import login, logout
 from django.contrib import messages
@@ -84,6 +87,7 @@ def admin_panel(request):
         'students':   students,
         'feedback':   feedback,
         'grade_rows': grade_rows,
+        'submitted': ClassSection.objects.filter(submitted__isnull=False).count(),
         'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
         'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
 
@@ -195,7 +199,9 @@ def section_view(request, section_name, subject_code, semester, school_yr):
             messages.warning(request, f"Saved {save_count} students, {error_count} errors.")
         else:
             messages.error(request, f"Failed to save grades: {error_count} errors.")
-
+            
+        request.session['submitted'] = section.submitted
+        request.session['admin_approved'] = section.admin_approved
         return redirect('section_view', section_name, subject_code, semester, school_yr)
 
     return render(request, 'portal/teacher_section_view.html', {
@@ -410,6 +416,62 @@ def admin_add_teacher(request):
     
     return render(request, 'portal/admin_add_teacher.html', {'form': form})
 
+def teacher_submit(request, section_id):
+    teacher_id = request.session.get('teacher_id')
+    if not teacher_id:
+        return redirect('teacher_login')
+    
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+    section = get_object_or_404(ClassSection, id=section_id, teacher=teacher)
+
+    if section.submitted:
+        messages.info(request, "Grades for this section have already been submitted.")
+        return redirect('section_view', 
+                        section.section_name,
+                        section.subject.code,
+                        section.semester,
+                        section.school_yr)
+
+    section.submitted = True
+    section.save()
+    request.session['submitted'] = True  # Mark as submitted in session
+
+    messages.success(request, "Grades submitted successfully! You can no longer edit grades for this section.")
+    return redirect('section_view', 
+                    section.section_name,
+                    section.subject.code,
+                    section.semester,
+                    section.school_yr)
+
+def admin_submitted(request):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    if request.method == 'POST':
+        section_id = request.POST.get('approve_section')
+        if section_id:
+            section = get_object_or_404(ClassSection, id=section_id)
+            section.admin_approved = True
+            section.save()
+            messages.success(request, f'Section "{section.section_name} ({section.subject.code})" approved successfully.')
+        return redirect('admin_submitted')
+    
+    sections = ClassSection.objects.filter(
+        submitted=True
+    ).select_related('teacher', 'subject').order_by(
+        '-school_yr', 'semester', 'subject__code', 'section_name'
+    )
+    
+    return render(request, 'portal/admin_submitted.html', {
+        'sections': sections,
+        'section_count': sections.count(),
+        'sy': SchoolYear.objects.last().get_sy() if SchoolYear.objects.exists() else current_school_year(),
+        'semester': Semester.objects.last().get_semester() if Semester.objects.exists() else '1st',
+    })
+
+
+
 def admin_subjects(request):
     admin_id = request.session.get('admin_id')
     if not admin_id:
@@ -502,7 +564,7 @@ def delete_student(request, student_id):
     student.delete()
     
     messages.success(request, f'Student "{student_name}" ({student_no_str}) deleted successfully. Related grade records removed.')
-    return redirect('admin_panel')
+    return redirect('admin_students')
 
 def teacher_add_grade(request):
     teacher_id = request.session.get('teacher_id')
@@ -554,9 +616,15 @@ def login_view(request):
         return redirect('grades')
     form = LoginForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
-        login(request, form.cleaned_data['user'])
-        return redirect('grades')
-    return render(request, 'portal/login.html', {'form': form, 'current': 'login'})
+        student = Student.objects.filter(student_no=form.cleaned_data['user']).first()
+        if student:
+            student.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, student)
+            return redirect('grades')
+        else:
+            form.add_error('user', 'Student ID not found. Please check your ID or contact administrator.')
+            return render(request, 'portal/login.html', {'form': form, 'current': 'login'})
+    return render(request, 'portal/login.html', {'form': form, 'current': 'login', 'error_message': form.errors.get('__all__')})
 
 
 def logout_view(request):
@@ -641,7 +709,10 @@ def grades_view(request):
     student = request.user
     semester_filter = request.GET.get('semester', '')
     
-    base_query = Grade.objects.filter(student=student).select_related('subject')
+    base_query = Grade.objects.filter(
+        student=student, 
+        section__admin_approved=True
+    ).select_related('subject', 'section')
     
     if semester_filter:
         base_query = base_query.filter(semester=semester_filter)
@@ -664,12 +735,28 @@ def grades_view(request):
         semester_units = 0
         semester_weighted = 0.0
         for r in semester_rows:
+            is_pending = getattr(r.section, 'admin_approved', False) == False
             rem = r.remarks or ''
-            if rem == 'PASSED':   pill, gcls = 'pill-pass', 'grade-pass'
-            elif rem == 'FAILED': pill, gcls = 'pill-fail', 'grade-fail'
-            elif rem == 'INC':    pill, gcls = 'pill-inc',  'grade-inc'
-            else:                 pill, gcls = '',           ''
-            row_data = {'grade': r, 'pill': pill, 'gcls': gcls, 'rem': rem or 'PENDING'}
+            if is_pending:
+                pill, gcls, display_final = 'pill-pending', 'grade-pending', None
+                rem = 'PENDING (Awaiting Admin Approval)'
+            elif rem == 'PASSED':   
+                pill, gcls, display_final = 'pill-pass', 'grade-pass', r.final
+            elif rem == 'FAILED': 
+                pill, gcls, display_final = 'pill-fail', 'grade-fail', r.final
+            elif rem == 'INC':    
+                pill, gcls, display_final = 'pill-inc', 'grade-inc', r.final
+            else:                 
+                pill, gcls, display_final = '', '', r.final
+            
+            row_data = {
+                'grade': r, 
+                'pill': pill, 
+                'gcls': gcls, 
+                'rem': rem,
+                'is_pending': is_pending,
+                'display_final': display_final
+            }
             semester_grade_rows.append(row_data)
             if r.final is not None and r.remarks == 'PASSED':
                 semester_units += r.subject.units
@@ -685,6 +772,9 @@ def grades_view(request):
     gwa = round(weighted_sum / total_units, 2) if total_units > 0 else None
 
     semesters = sorted(set(Grade.objects.filter(student=student).values_list('semester', flat=True)))
+    
+    # check if grade from section is verified by admin_approved
+    
 
     return render(request, 'portal/grades.html', {
         'current':     'grades',
@@ -820,5 +910,71 @@ def delete_section(request, section_id):
     return redirect('teacher')
 
 
-# REMOVED DUPLICATE admin_add_student using RegisterForm (caused password error)
-# Keep only the AdminStudentForm version above
+def admin_students(request):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    course_filter = request.GET.get('course', '')
+    students = Student.objects.all().order_by('student_no', 'last_name')
+    
+    if course_filter:
+        students = students.filter(course__icontains=course_filter)
+    
+    return render(request, 'portal/admin_students.html', {
+        'students': students,
+        'course_filter': course_filter,
+        'course_choices': COURSE_CHOICES,
+    })
+
+
+def bulk_import_students(request):
+    admin_id = request.session.get('admin_id')
+    if not admin_id:
+        return redirect('index')
+    
+    if request.method == 'POST':
+        form = BulkStudentImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            json_file = request.FILES['json_file']
+            import json
+            try:
+                data = json.load(json_file)
+                created_count = 0
+                skipped_count = 0
+                for item in data:
+                    student_no = item.get('student_no')
+                    if not student_no:
+                        skipped_count += 1
+                        continue
+                    
+                    student, created = Student.objects.get_or_create(
+                        student_no=student_no,
+                        defaults={
+                            'last_name': item.get('last_name', ''),
+                            'first_name': item.get('first_name', ''),
+                            'email': None,
+                            'course': item.get('course', 'BSIT'),
+                            'year_level': item.get('year_level', 1),
+                            'is_active': False,
+                            'is_staff': False,
+                            'is_superuser': False,
+                        }
+                    )
+                    if created:
+                        created_count += 1
+                    else:
+                        skipped_count += 1
+                
+                messages.success(request, f'Bulk import complete: {created_count} created, {skipped_count} skipped (existing student_no).')
+                return redirect('admin_students')
+            except json.JSONDecodeError:
+                messages.error(request, 'Invalid JSON file.')
+            except Exception as e:
+                messages.error(request, f'Error: {str(e)}')
+        else:
+            messages.error(request, 'Invalid file.')
+    else:
+        form = BulkStudentImportForm()
+    
+    return render(request, 'portal/bulk_import_students.html', {'form': form})

@@ -1,0 +1,124 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}
+  CEC Grade Portal — Subjects
+{% endblock %}
+
+{% block content %}
+  <div class="page-wrap" style="padding-top:2.5rem;">
+    <div class="breadcrumb">
+      <a href="{% url 'index' %}">Home</a>
+      <span class="sep">›</span>
+      <a href="{% url 'admin_panel' %}">Admin Panel</a>
+      <span class="sep">›</span>
+      <span>Students</span>
+    </div>
+
+    <div class="section-header fade-up">
+      <div class="eyebrow">Admin Panel</div>
+      <h2>Students List</h2>
+      <p>List of all students in the system.</p>
+    </div>
+
+    <div id="allstudents" class="card fade-up-4" style="margin-bottom:2rem;">
+      <div class="card-header">
+        <h3>All Students</h3>
+
+        <div class="flex items-center">
+          <div style="margin-right: 1rem;">
+            <input type="text" id="studentSearch" placeholder="Search student..." style="padding:.5rem; width:100%; border-radius:10px; border:1px solid #ccc;" />
+          </div>
+          {% comment %}filter{% endcomment %}
+          <select name="course" id="courseFilter" style="padding:.5rem; border-radius:10px; border:1px solid #ccc; margin-right:1rem;">
+            <option value="">All courses</option>
+            {% for value, label in course_choices %}
+              <option value="{{ value }}" {% if course_filter == value %}selected{% endif %}>{{ label }}</option>
+        
+            {% endfor %}
+          </select>
+
+          <select name="addSelect" id="addSelect" style="border: 1px solid var(--sky); border-radius: 10px; padding: .5rem; color: var(--text-dark); font-weight: 600;">
+            <option value="">Add</option>
+            <option value="Manual Add">
+              <a href="{% url 'admin_add_student' %}" title="Manual Add">Manual Add</a>
+            </option>
+            <option value="Bulk Import">
+              <a href="{% url 'bulk_import_students' %}" title="Bulk Import JSON">Import JSON</a>
+            </option>
+          </select>
+
+          {% comment %} <span style="font-size:.8rem;color:var(--text-light);">{{ students|length }} records</span> {% endcomment %}
+        </div>
+      </div>
+      <div class="grade-table-wrap">
+        <table class="grade-table">
+          <thead>
+            <tr>
+              <th class="hidden">ID</th>
+              <th>Student No.</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Course</th>
+              <th>Year</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody class="student-table">
+            {% for s in students %}
+              <tr class="student-row">
+                <td class="hidden" style="color:var(--text-light);font-family:var(--mono);">{{ s.pk }}</td>
+                <td style="font-family:var(--mono);font-size:.85rem;">{{ s.student_no }}</td>
+                <td class="subject-name">{{ s.last_name }}, {{ s.first_name }}</td>
+                <td style="font-size:.82rem;">{{ s.email|default:'_' }}</td>
+                <td style="font-size:.82rem;">{{ s.course }}</td>
+                <td style="text-align:center;">{{ s.year_level }}</td>
+                <td>
+                  {% comment %} <a href="{% url 'profile' s.pk %}" class="btn btn-outline btn-sm" style="font-size:.72rem;padding:.3rem .7rem;">View</a> {% endcomment %}
+                  <form method="post" action="{% url 'delete_student' s.pk %}" style="display:inline;" onsubmit="return confirm('Delete student {{ s.last_name }}, {{ s.first_name }} ({{ s.student_no }})? This cannot be undone.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm" style="font-size:.72rem;padding:10px;border:none; border-radius: 100%; background: rgba(255,0,0,0.2);color:white;margin-left:.5rem;"><img src="{% static 'portal/images/delete.png' %}" alt="Delete" style="width:16px;height:16px;vertical-align:middle;" /></button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('studentSearch').addEventListener('keyup', filterStudents)
+    document.getElementById('courseFilter').addEventListener('change', filterStudents)
+    
+    function filterStudents() {
+      let searchInput = document.getElementById('studentSearch').value.toLowerCase()
+      let courseFilter = document.getElementById('courseFilter').value.toLowerCase()
+      let rows = document.getElementsByClassName('student-row')
+    
+      for (let i = 0; i < rows.length; i++) {
+        let row = rows[i]
+        let text = row.innerText.toLowerCase()
+        let courseCell = row.cells[4] // Course column
+        let courseText = courseCell ? courseCell.innerText.toLowerCase() : ''
+    
+        let show = text.includes(searchInput)
+        if (courseFilter && courseFilter !== 'all' && courseFilter !== '') {
+          show = show && courseText.includes(courseFilter)
+        }
+    
+        row.style.display = show ? '' : 'none'
+      }
+    }
+
+      document.getElementById('addSelect').addEventListener('change', function() {
+          let value = this.value
+          if (value === 'Manual Add') {
+            window.location.href = "{% url 'admin_add_student' %}"
+          } else if (value === 'Bulk Import') {
+            window.location.href = "{% url 'bulk_import_students' %}"
+          }
+        })
+  </script>
+{% endblock %}
